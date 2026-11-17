@@ -9,34 +9,136 @@
 
 @if (user == null)
 {
-    <!-- ============================================================
-         STATE 1: NOT LOGGED IN (The Role Picker)
-         ============================================================ -->
-    <section class="hero">
-        <h1 class="display-lg">Crown Towers Club</h1>
-        <p class="body-lg">Enter your NRIC, then continue as one of your roles.</p>
-    </section>
+    <section class="home-landing">
 
-    <section class="card">
-        @if (!string.IsNullOrWhiteSpace(error))
-        {
-            <p class="error" role="alert" style="margin-bottom: 16px;">@error</p>
-        }
+        <!-- LEFT: CLUB BRANDING -->
+        <div class="home-intro">
 
-        @using (Html.BeginForm("Begin", "DevSession", FormMethod.Post, new { id = "dev-login-form" }))
-        {
-            @*@Html.AntiForgeryToken()*@
-            <div class="field--full" style="margin-bottom: 24px;">
-                <label class="form-label label-md" for="nric">NRIC</label>
-                <input id="nric" name="pICNo" class="form-input" type="text" maxlength="20" value="900101-13-5001" placeholder="000000-00-0000" required />
+            <div class="home-brand">
+                <div class="home-brand-mark">
+                    <img src="@Url.Content("~/Content/app/images/krctk-logo.png")"
+                         alt="Crown Towers Club Logo" />
+                </div>
+
+                <div>
+                    <span class="home-brand-name">CROWN TOWERS CLUB</span>
+                    <span class="home-brand-caption">Membership Management System</span>
+                </div>
             </div>
 
-            <div class="role-buttons">
-                <button type="submit" name="role" value="Staff" class="btn btn--primary">Staff</button>
-                <button type="submit" name="role" value="DepartmentHead" class="btn btn--secondary">Department Head</button>
-                <button type="submit" name="role" value="Committee" class="btn btn--secondary">Club Committee</button>
+            <div class="home-intro-content">
+                <span class="home-eyebrow">WELCOME TO THE CLUB</span>
+
+                <h1>
+                    Your Club.
+                    <br />
+                    Your Community.
+                </h1>
+
+                <p>
+                    Access your membership information and manage
+                    club activities through the Crown Towers Club
+                    membership portal.
+                </p>
             </div>
-        }
+
+            <div class="home-intro-footer">
+                <span class="material-symbols-outlined">verified_user</span>
+                <span>Official Crown Towers Club Portal</span>
+            </div>
+
+        </div>
+
+
+        <!-- RIGHT: LOGIN CARD -->
+        <section class="home-login-card">
+
+            <div class="home-login-heading">
+                <span class="home-login-icon material-symbols-outlined">
+                    account_circle
+                </span>
+
+                <h2>Access Your Account</h2>
+
+                <p>Enter your NRIC and select your role to continue.</p>
+            </div>
+
+            @if (!string.IsNullOrWhiteSpace(error))
+            {
+                <p class="error" role="alert">@error</p>
+            }
+
+            @using (Html.BeginForm("Begin", "DevSession", FormMethod.Post,
+                new { id = "dev-login-form" }))
+            {
+                <div class="home-nric-field">
+                    <label class="form-label label-md" for="nric">
+                        NRIC NUMBER
+                    </label>
+
+                    <input id="nric"
+                           name="pICNo"
+                           class="form-input"
+                           type="text"
+                           maxlength="20"
+                           value="900101-13-5001"
+                           placeholder="000000-00-0000"
+                           required />
+                </div>
+
+                <div class="home-role-heading">
+                    <span>CONTINUE AS</span>
+                </div>
+
+                <div class="home-role-buttons">
+
+                    <button type="submit"
+                            name="role"
+                            value="Staff"
+                            class="home-role-button">
+                        <span class="material-symbols-outlined">person</span>
+                        <span>
+                            <strong>Staff</strong>
+                            <small>Access your membership</small>
+                        </span>
+                        <span class="material-symbols-outlined home-role-arrow">
+                            arrow_forward
+                        </span>
+                    </button>
+
+                    <button type="submit"
+                            name="role"
+                            value="DepartmentHead"
+                            class="home-role-button">
+                        <span class="material-symbols-outlined">supervisor_account</span>
+                        <span>
+                            <strong>Department Head</strong>
+                            <small>Review membership applications</small>
+                        </span>
+                        <span class="material-symbols-outlined home-role-arrow">
+                            arrow_forward
+                        </span>
+                    </button>
+
+                    <button type="submit"
+                            name="role"
+                            value="Committee"
+                            class="home-role-button">
+                        <span class="material-symbols-outlined">groups</span>
+                        <span>
+                            <strong>Club Committee</strong>
+                            <small>Manage club membership activities</small>
+                        </span>
+                        <span class="material-symbols-outlined home-role-arrow">
+                            arrow_forward
+                        </span>
+                    </button>
+
+                </div>
+            }
+
+        </section>
+
     </section>
 }
 else
