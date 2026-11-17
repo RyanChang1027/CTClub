@@ -1,228 +1,260 @@
 ﻿/* ============================================================
    CROWN TOWERS CLUB - APP SHELL
-   Global layout, Top Navigation, and User Profile
+   Sidebar Navigation, User Profile and Global Layout
    ============================================================ */
 
+
 /* ------------------------------------------------------------
-   1. Main App Bar Layout
+   1. Main Application Layout
    ------------------------------------------------------------ */
-.app-bar {
+
+.app-shell {
+    display: flex;
+    min-height: 100vh;
+    width: 100%;
+}
+
+.app-main {
+    flex: 1;
+    min-width: 0;
+}
+
+
+/* ------------------------------------------------------------
+   2. Sidebar
+   ------------------------------------------------------------ */
+
+.app-sidebar {
     position: sticky;
     top: 0;
-    z-index: 50;
-    background: rgba(244, 246, 249, 0.88); /* bg-rgb */
-    border-bottom: 1px solid rgba(213, 220, 229, 0.25); /* outline-variant-rgb */
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    display: flex;
+    flex-direction: column;
+    flex: 0 0 270px;
+    width: 270px;
+    height: 100vh;
+    padding: 24px 18px;
+    background: var(--primary);
+    color: #ffffff;
+    border-right: 4px solid var(--secondary);
 }
 
-.app-bar-inner {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    max-width: 1200px; /* var(--container-max) */
-    margin: 0 auto;
-    padding: 12px 36px; /* Slightly tighter vertical padding for logo */
-}
 
 /* ------------------------------------------------------------
-   2. Left Side: Logo & Navigation
+   3. Sidebar Brand
    ------------------------------------------------------------ */
-.app-bar-left {
+
+.sidebar-brand {
     display: flex;
     align-items: center;
-    gap: 32px;
+    gap: 12px;
+    padding: 4px 6px 24px;
+    color: #ffffff;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.16);
 }
 
-/* Logo Container */
-.logo-container {
-    background-color: #1a1a1a;
-    padding: 6px;
-    border-radius: 50%;
+.sidebar-logo {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 80px;  /* Reduced from 120px so it doesn't break the header height */
-    height: 80px;
-}
-
-.logo-container img {
-    width: 100%;
-    height: 100%;
+    flex: 0 0 48px;
+    width: 48px;
+    height: 48px;
+    padding: 4px;
+    background: #ffffff;
     border-radius: 50%;
-    object-fit: cover;
 }
 
-/* Navigation Links */
-.app-nav {
+    .sidebar-logo img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        border-radius: 50%;
+    }
+
+.sidebar-brand-text {
     display: flex;
-    flex-wrap: wrap;
-    align-items: center;
+    flex-direction: column;
     gap: 4px;
 }
 
-/* Ensure nav links look consistent whether they are <a> or <button> */
-.app-nav-link {
-    display: inline-flex;
+    .sidebar-brand-text strong {
+        font-size: 15px;
+        line-height: 20px;
+        font-weight: 700;
+    }
+
+    .sidebar-brand-text span {
+        color: rgba(255, 255, 255, 0.65);
+        font-size: 11px;
+        letter-spacing: 0.04em;
+    }
+
+
+/* ------------------------------------------------------------
+   4. Sidebar Navigation
+   ------------------------------------------------------------ */
+
+.sidebar-nav {
+    flex: 1;
+    padding-top: 28px;
+    overflow-y: auto;
+}
+
+.sidebar-section {
+    margin-bottom: 30px;
+}
+
+.sidebar-section-title {
+    display: block;
+    margin: 0 0 12px;
+    padding: 0 12px;
+    color: #d9c18a;
+    font-size: 11px;
+    line-height: 16px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+}
+
+.sidebar-link {
+    display: flex;
     align-items: center;
-    padding: 8px 12px;
+    gap: 12px;
+    width: 100%;
+    min-height: 46px;
+    margin-bottom: 5px;
+    padding: 11px 12px;
     border-radius: var(--radius-md);
-    color: var(--on-surface-variant);
-    font-size: 17px;
+    color: rgba(255, 255, 255, 0.78);
+    font-size: 14px;
     line-height: 20px;
     font-weight: 600;
-    letter-spacing: 0.02em;
-    transition: background-color var(--transition-fast), color var(--transition-fast);
-    background: transparent; /* Fix for button background */
-    border: none; /* Fix for button border */
-    cursor: pointer;
     text-decoration: none;
+    transition: background-color var(--transition-fast), color var(--transition-fast);
 }
 
-.app-nav-link:hover,
-.app-nav-link:focus-visible {
-    background: var(--surface-container-high);
-    color: var(--primary);
-}
+    .sidebar-link .material-symbols-outlined {
+        flex: 0 0 22px;
+        width: 22px;
+        font-size: 21px;
+        text-align: center;
+    }
 
-.app-nav-link--muted {
-    color: #64748b;
-    opacity: 0.8;
-}
+    .sidebar-link:hover,
+    .sidebar-link:focus-visible {
+        background: rgba(255, 255, 255, 0.12);
+        color: #ffffff;
+    }
+
+    .sidebar-link.is-active {
+        background: #ffffff;
+        color: var(--primary);
+    }
+
+        .sidebar-link.is-active:hover {
+            background: #f1f3f6;
+            color: var(--primary);
+        }
+
 
 /* ------------------------------------------------------------
-   3. Right Side: User Profile & Actions
+   5. Sidebar Footer & User Profile
    ------------------------------------------------------------ */
-/*.app-bar-right {
-    display: flex;
-    align-items: center;
-    gap: 24px;
-}*/
 
-.user-profile {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.user-details {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    text-align: right;
-}
-
-.app-bar-user-name {
-    color: #243447;
-    font-size: 14px;
-    line-height: 1.2;
-    font-weight: 700;
-}
-
-.app-bar-user-role {
-    color: #775a19; /* var(--secondary) */
-    text-transform: uppercase;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.05em;
-}
-
-/* User Avatar Circle */
-.avatar {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    border-radius: 999px;
-    background: #eef1f5;
-    border: 1px solid rgba(213, 220, 229, 0.3);
-}
-
-.avatar span {
-    color: #eef1f5; 
-    font-size: 14px;
-    font-weight: 700;
-}
-
-/* ------------------------------------------------------------
-   4. Landing Page Role Buttons
-   ------------------------------------------------------------ */
-.role-buttons {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin-top: 24px;
-}
-
-.role-buttons .btn {
-    flex: 1 1 180px;
-}
-
-/* ------------------------------------------------------------
-   5. Info Banner (e.g., Returned for Correction)
-   ------------------------------------------------------------ */
-.card--info-banner {
-    border-left: 4px solid #b45309;
-    background: #fffbeb;
-}
-
-.card--info-banner .section-title {
-    margin-bottom: 8px;
-    padding-bottom: 8px;
-    border-bottom-color: rgba(180, 83, 9, 0.25);
-}
-
-.card--info-banner .body-md {
-    margin: 0;
-    color: #78350f;
-}
-
-/* ==========================================
-   6. User Dropdown
-   ========================================== */
-.app-bar-right {
+.sidebar-footer {
     position: relative;
+    flex-shrink: 0;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.16);
 }
+
+.sidebar-user-dropdown {
+    position: relative;
+    width: 100%;
+}
+
+.sidebar-user-profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 10px 8px;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: var(--radius-md);
+    color: #ffffff;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color var(--transition-fast), border-color var(--transition-fast);
+}
+
+    .sidebar-user-profile:hover,
+    .sidebar-user-profile[aria-expanded="true"] {
+        background: rgba(255, 255, 255, 0.12);
+        border-color: rgba(255, 255, 255, 0.12);
+    }
+
+    .sidebar-user-profile .avatar {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 42px;
+        width: 42px;
+        height: 42px;
+        background: #ffffff;
+        border: none;
+        border-radius: 50%;
+    }
+
+        .sidebar-user-profile .avatar .material-symbols-outlined {
+            color: var(--primary);
+            font-size: 23px;
+        }
+
+.sidebar-user-details {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+    .sidebar-user-details strong {
+        overflow: hidden;
+        color: #ffffff;
+        font-size: 13px;
+        line-height: 17px;
+        font-weight: 700;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .sidebar-user-details span {
+        overflow: hidden;
+        color: rgba(255, 255, 255, 0.65);
+        font-size: 11px;
+        line-height: 15px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+.sidebar-user-arrow {
+    flex: 0 0 auto;
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 21px;
+}
+
+
+/* ------------------------------------------------------------
+   6. Dropdown Menus
+   ------------------------------------------------------------ */
 
 .user-dropdown {
     position: relative;
 }
 
-/* The Trigger Button */
-.user-profile-btn {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    padding: 4px 8px;
-    border-radius: var(--radius-md);
-    transition: background-color var(--transition-fast);
-}
-
-.user-profile-btn:hover {
-    background-color: var(--surface-container-high);
-}
-
-/* Reuse existing styles for .user-details and .avatar */
-.user-profile-btn .avatar {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 50px;
-    height: 50px;
-    border-radius: var(--radius-pill);
-    background: #243447; /*var(--surface-container-high);*/
-    border: 1px solid rgb(var(--outline-variant-rgb) / 0.3);
-    color: var(--primary);
-}
-
-/* The Dropdown Menu */
 .dropdown-menu {
-    display: none; /* Hidden by default */
+    display: none;
     position: absolute;
     top: calc(100% + 8px);
     right: 0;
@@ -235,126 +267,89 @@
     overflow: hidden;
 }
 
-/* Show menu when toggled */
-.dropdown-menu.is-open {
-    display: block;
-    animation: fadeIn 0.15s ease-out;
-}
+    .dropdown-menu.is-open {
+        display: block;
+        animation: fadeIn 0.15s ease-out;
+    }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-4px); }
-    to { opacity: 1; transform: translateY(0); }
-}
 
-.dropdown-header {
-    padding: 12px 16px;
-    background: var(--surface-container-low);
-    color: var(--on-surface);
-    text-align: left;
-}
+/* Profile dropdown opens ABOVE the profile button */
 
-.dropdown-header strong {
-    display: block;
-    font-size: 14px;
-}
-
-.dropdown-header span {
-    color: var(--on-surface-variant);
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-}
-
-.dropdown-divider {
-    height: 1px;
-    background-color: var(--outline-variant);
-    margin: 0;
+.sidebar-user-menu {
+    top: auto;
+    right: auto;
+    bottom: calc(100% + 8px);
+    left: 0;
+    width: 100%;
 }
 
 .dropdown-item {
-    display: block;
+    display: flex;
+    align-items: center;
+    gap: 10px;
     padding: 12px 16px;
     color: var(--danger);
-    text-decoration: none;
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 600;
+    text-decoration: none;
     transition: background-color var(--transition-fast);
 }
 
-.dropdown-item:hover {
-    background-color: #fee2e2; /* Light red for logout */
+    .dropdown-item .material-symbols-outlined {
+        font-size: 20px;
+    }
+
+    .dropdown-item:hover {
+        background: #fee2e2;
+    }
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-/* ==========================================
-   7. Nav Dropdown (The "More" menu)
-   ========================================== */
-/* Make sure the 'More' button container sits correctly */
-.nav-dropdown {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-}
-
-.nav-dropdown .dropdown-menu {
-    top: calc(100% + 8px);
-    right: 0;
-    min-width: 200px;
-}
-
-/* Ensure the dropdown item does NOT inherit nav link styles */
-.nav-dropdown .dropdown-item {
-    display: block;
-    padding: 10px 16px;
-    color: var(--on-surface);
-    text-decoration: none;
-    font-size: 14px;
-    font-weight: 500;
-    transition: background-color var(--transition-fast);
-}
-
-.nav-dropdown .dropdown-item:hover {
-    background-color: var(--surface-container-high);
-    color: var(--primary);
-}
-
-/* Rotate the arrow when open (optional) */
-.nav-dropdown button[aria-expanded="true"] {
-    background-color: var(--surface-container-high);
-}
 
 /* ------------------------------------------------------------
-   8. Dashboard Card
+   7. Existing Information Banner
    ------------------------------------------------------------ */
-.dashboard-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr); /* Creates 2 equal-width columns */
-    gap: 24px; /* Space between the cards */
-    align-items: start; /* Prevents cards from stretching to match the tallest card's height */
+
+.card--info-banner {
+    border-left: 4px solid #b45309;
+    background: #fffbeb;
 }
 
-/* For mobile screens, stack them vertically */
+    .card--info-banner .section-title {
+        margin-bottom: 8px;
+        padding-bottom: 8px;
+        border-bottom-color: rgba(180, 83, 9, 0.25);
+    }
+
+    .card--info-banner .body-md {
+        margin: 0;
+        color: #78350f;
+    }
+
+
+/* ------------------------------------------------------------
+   8. Existing Dashboard Layout
+   ------------------------------------------------------------ */
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    align-items: start;
+}
+
 @media (max-width: 900px) {
     .dashboard-grid {
         grid-template-columns: 1fr;
-    }
-}
-
-/* ------------------------------------------------------------
-   9. Responsive Layout
-   ------------------------------------------------------------ */
-@media (max-width: 900px) {
-    .app-bar-inner {
-        flex-direction: row; /* Keep it row instead of column */
-        flex-wrap: wrap; /* Allow wrapping if needed */
-        align-items: center;
-    }
-    
-    .app-bar-left {
-        flex: 1; /* Takes up remaining space */
-    }
-
-    .app-bar-right {
-        border-top: none;
-        padding-top: 0;
     }
 }
