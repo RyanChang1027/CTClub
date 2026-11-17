@@ -1,0 +1,55 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "AJAX API";
+}
+
+<section class="hero">
+    <h1 class="display-lg">AJAX API</h1>
+    <p class="body-lg">Search for something. The page will NOT reload. It will fetch JSON from the server.</p>
+</section>
+
+<section class="card" style="max-width: 600px;">
+    <div class="flex items-end" style="gap: 12px; margin-bottom: 24px;">
+        <div style="flex: 1;">
+            <label class="form-label label-md" for="search-query">Search Query</label>
+            <input type="text" id="search-query" class="form-input" placeholder="Type something..." />
+        </div>
+        <button id="btn-search" class="btn btn--primary" style="min-height: 48px;">Search</button>
+    </div>
+
+    <!-- Response Box -->
+    <div id="api-response" style="display: none; padding: 16px; background: var(--surface-container-low); border-radius: 6px;">
+        <h3 class="label-md">Response from Server:</h3>
+        <pre id="response-text" style="white-space: pre-wrap; margin-top: 8px;"></pre>
+    </div>
+</section>
+
+@section scripts {
+    <script>
+        document.getElementById("btn-search").addEventListener("click", function() {
+            var query = document.getElementById("search-query").value;
+            var responseBox = document.getElementById("api-response");
+            var responseText = document.getElementById("response-text");
+
+            // AJAX GET Request using native JS Fetch API
+            fetch("/Training/ApiDemo?query=" + encodeURIComponent(query))
+                .then(response => response.json())
+                .then(data => {
+                    responseBox.style.display = "block";
+
+                    if (data.Success) {
+                        responseText.textContent = data.Message + "\n\nTimestamp: " + data.Timestamp;
+                        responseText.style.color = "var(--success)";
+                    } else {
+                        responseText.textContent = data.Message;
+                        responseText.style.color = "var(--danger)";
+                    }
+                })
+                .catch(error => {
+                    responseBox.style.display = "block";
+                    responseText.textContent = "An error occurred: " + error;
+                    responseText.style.color = "var(--danger)";
+                });
+        });
+    </script>
+}

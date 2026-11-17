@@ -1,0 +1,32 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Data Passing";
+}
+
+<section class="hero">
+    <h1 class="display-lg">Controller to View</h1>
+    <p class="body-lg">
+        The Controller sent this message: <strong style="color: var(--primary);">@ViewBag.Message</strong>
+    </p>
+</section>
+
+<section class="card">
+    <h2 class="headline-md section-title">How it works</h2>
+
+    <p class="body-md">
+        <strong>Current Time:</strong> @ViewBag.CurrentTime
+    </p>
+
+    <p class="body-md">
+        <strong>ViewData Developer Name:</strong> @ViewData["DeveloperName"]
+    </p>
+
+    <div style="margin-top: 24px; padding: 16px; background: var(--surface-container-low); border-radius: 6px;">
+        <h3 class="label-md">Code Example (Controller)</h3>
+        <pre><code>ViewBag.Message = "Hello from the Controller!";
+return View();</code></pre>
+
+        <h3 class="label-md" style="margin-top: 16px;">Code Example (View)</h3>
+        <pre><code>&lt;p&gt;@("@")ViewBag.Message&lt;/p&gt;</code></pre>
+    </div>
+</section>
