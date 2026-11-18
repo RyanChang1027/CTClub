@@ -18,15 +18,50 @@
 
     @if (devUser != null)
     {
-        <div class="app-shell">
+    <div class="app-shell">
 
-            @Html.Partial("_Navigation", devUser)
+        <!-- MOBILE HEADER -->
+        <header class="mobile-app-header">
 
-            <main class="main app-main" aria-live="polite">
-                @RenderBody()
-            </main>
+            <a href="@Url.Action("Index", "Home")"
+               class="mobile-app-brand">
 
-        </div>
+                <img src="@Url.Content("~/Content/app/images/krctk-logo.png")"
+                     alt="Crown Towers Club Logo" />
+
+                <span>Crown Towers Club</span>
+
+            </a>
+
+            <button type="button"
+                    class="mobile-nav-toggle"
+                    id="mobile-nav-toggle"
+                    aria-label="Open navigation menu"
+                    aria-controls="app-sidebar"
+                    aria-expanded="false">
+
+                <span class="material-symbols-outlined">
+                    menu
+                </span>
+
+            </button>
+
+        </header>
+
+        <!-- MOBILE SIDEBAR BACKDROP -->
+        <button type="button"
+                class="sidebar-backdrop"
+                id="sidebar-backdrop"
+                aria-label="Close navigation menu">
+        </button>
+
+        @Html.Partial("_Navigation", devUser)
+
+        <main class="main app-main" aria-live="polite">
+            @RenderBody()
+        </main>
+
+    </div>
     }
     else
     {

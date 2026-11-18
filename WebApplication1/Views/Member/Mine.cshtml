@@ -69,7 +69,7 @@
     </section>
 }
 
-<section class="card">
+<section class="card @(Model != null && Model.Count > 0 ? "applications-list-card" : "")">
     @if (Model == null || Model.Count == 0)
     {
         <p class="body-md">
@@ -86,7 +86,7 @@
     }
     else
     {
-        <table class="queue-table">
+        <table class="queue-table queue-table--mobile-cards">
             <thead>
                 <tr>
                     <th>Date</th>
@@ -100,36 +100,58 @@
                 @foreach (var m in Model)
                 {
                     <tr>
-                        <td>@m.ApplicationDate.ToString("yyyy-MM-dd")</td>
-                        <td>
+                        <td data-label="Date">
+                            @m.ApplicationDate.ToString("yyyy-MM-dd")
+                        </td>
+
+                        <td data-label="Application Status">
                             <span class="status-pill status-pill--@(m.ApplicationStatus == CrownTowersClub.Domain.ApplicationStatus.Approved ? "approved" : m.ApplicationStatus == CrownTowersClub.Domain.ApplicationStatus.Draft ? "draft" : m.ApplicationStatus.Contains("Rejected") ? "rejected" : m.ApplicationStatus == CrownTowersClub.Domain.ApplicationStatus.ReturnedForCorrection ? "returned" : "pending")">
                                 @m.ApplicationStatus
                             </span>
                         </td>
-                        <td>@(m.MembershipNumber ?? "-")</td>
-                        <td>
+
+                        <td data-label="Membership No.">
+                            @(m.MembershipNumber ?? "-")
+                        </td>
+
+                        <td data-label="Member Status">
                             @if (m.MembershipStatus == "Pending Activation")
                             {
-                                <span class="status-pill status-pill--pending">@m.MembershipStatus</span>
+                                <span class="status-pill status-pill--pending">
+                                    @m.MembershipStatus
+                                </span>
                             }
                             else if (m.MembershipStatus == "Active")
                             {
-                                <span class="status-pill status-pill--approved">@m.MembershipStatus</span>
+                                <span class="status-pill status-pill--approved">
+                                    @m.MembershipStatus
+                                </span>
                             }
                             else
                             {
                                 @(m.MembershipStatus ?? "-")
                             }
                         </td>
-                        <td class="queue-table__action">
+
+                        <td class="queue-table__action" data-label="Action">
                             @if (m.ApplicationStatus == CrownTowersClub.Domain.ApplicationStatus.Draft ||
-m.ApplicationStatus == CrownTowersClub.Domain.ApplicationStatus.ReturnedForCorrection)
+                                 m.ApplicationStatus == CrownTowersClub.Domain.ApplicationStatus.ReturnedForCorrection)
                             {
-                                @Html.ActionLink("Resume", "Index", "Member", new { NRIC = m.NRIC }, new { @class = "btn btn--primary" })
+                                @Html.ActionLink(
+                                    "Resume",
+                                    "Index",
+                                    "Member",
+                                    new { NRIC = m.NRIC },
+                                    new { @class = "btn btn--primary" })
                             }
                             else
                             {
-                                @Html.ActionLink("View", "Detail", "Review", new { id = m.MemberId }, new { @class = "btn btn--primary" })
+                                @Html.ActionLink(
+                                    "View",
+                                    "Detail",
+                                    "Review",
+                                    new { id = m.MemberId },
+                                    new { @class = "btn btn--primary" })
                             }
                         </td>
                     </tr>

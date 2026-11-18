@@ -19,6 +19,12 @@
     min-width: 0;
 }
 
+/* Mobile navigation elements are hidden on desktop */
+
+.mobile-app-header,
+.sidebar-backdrop {
+    display: none;
+}
 
 /* ------------------------------------------------------------
    2. Sidebar
@@ -67,12 +73,12 @@
     box-shadow: 0 2px 8px rgba(214, 182, 107, 0.18)
 }
 
-    .sidebar-logo img {
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-        border-radius: 50%;
-    }
+.sidebar-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 50%;
+}
 
 .sidebar-brand-text {
     display: flex;
@@ -80,17 +86,17 @@
     gap: 4px;
 }
 
-    .sidebar-brand-text strong {
-        font-size: 15px;
-        line-height: 20px;
-        font-weight: 700;
-    }
+.sidebar-brand-text strong {
+    font-size: 15px;
+    line-height: 20px;
+    font-weight: 700;
+}
 
-    .sidebar-brand-text span {
-        color: rgba(255, 255, 255, 0.65);
-        font-size: 11px;
-        letter-spacing: 0.04em;
-    }
+.sidebar-brand-text span {
+    color: rgba(255, 255, 255, 0.65);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+}
 
 
 /* ------------------------------------------------------------
@@ -388,4 +394,146 @@
     .dashboard-grid {
         grid-template-columns: 1fr;
     }
+}
+
+/* ============================================================
+   9. Mobile Navigation
+   ============================================================ */
+
+@media (max-width: 767px) {
+
+    body.mobile-nav-open {
+        overflow: hidden;
+    }
+
+    /* Main application layout */
+
+    .app-shell {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+    }
+
+    /* Mobile Header */
+
+    .mobile-app-header {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        width: 100%;
+        min-height: 64px;
+        padding: 0 18px;
+
+        background: var(--primary);
+        border-bottom: 3px solid var(--secondary);
+    }
+
+    .mobile-app-brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+
+        color: #ffffff;
+        font-size: 14px;
+        font-weight: 700;
+        text-decoration: none;
+    }
+
+    .mobile-app-brand img {
+        width: 38px;
+        height: 38px;
+        padding: 3px;
+
+        object-fit: contain;
+
+        background: #ffffff;
+        border: 2px solid #d6b66b;
+        border-radius: 50%;
+    }
+
+    .mobile-nav-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        width: 42px;
+        height: 42px;
+
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: var(--radius-md);
+
+        color: #ffffff;
+        cursor: pointer;
+    }
+
+    .mobile-nav-toggle .material-symbols-outlined {
+        font-size: 26px;
+    }
+
+    /* Sidebar Backdrop */
+
+    .sidebar-backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 110;
+
+        width: 100%;
+        height: 100%;
+
+        padding: 0;
+        background: rgba(15, 23, 42, 0.55);
+        border: 0;
+
+        cursor: pointer;
+        opacity: 0;
+        visibility: hidden;
+
+        transition: opacity 0.2s ease,
+                    visibility 0.2s ease;
+    }
+
+    .sidebar-backdrop.is-visible {
+        display: block;
+        opacity: 1;
+        visibility: visible;
+    }
+
+    /* Slide-out Sidebar */
+
+    .app-sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 120;
+        width: min(290px, 85vw);
+        height: 100vh;
+        height: 100dvh;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        flex: none;
+        overflow: hidden;
+        border-right: 4px solid var(--secondary);
+        transform: translateX(-100%);
+        transition: transform 0.25s ease;
+    }
+
+    .app-sidebar.is-open {
+        transform: translateX(0);
+    }
+
+    /* Main Content */
+
+    .app-main {
+        width: 100%;
+        min-width: 0;
+        flex: 1;
+    }
+
 }
