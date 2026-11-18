@@ -396,8 +396,40 @@
     }
 }
 
+
+/* ------------------------------------------------------------
+   9. Dashboard Actions
+   ------------------------------------------------------------ */
+
+.dashboard-actions {
+    display: flex;
+    width: 100%;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.dashboard-actions .btn {
+    flex: 1 1 0;
+    min-width: 0;
+    box-sizing: border-box;
+    border-radius: 9px;
+    text-align: center;
+}
+
+@media (max-width: 767px) {
+
+    .dashboard-actions {
+        flex-direction: column;
+    }
+
+    .dashboard-actions .btn {
+        width: 100%;
+    }
+}
+
+
 /* ============================================================
-   9. Mobile Navigation
+   10. Mobile Navigation
    ============================================================ */
 
 @media (max-width: 767px) {

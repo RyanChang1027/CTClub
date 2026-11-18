@@ -18,43 +18,45 @@
     }
     else
     {
-        <table class="queue-table">
-            <thead>
-                <tr>
-                    <th>Applicant</th>
-                    <th>Department</th>
-                    <th>Verified</th>
-                    <th>Status</th>
-                    <th class="queue-table__action">Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var m in Model)
-                {
+        <div class="table-scroll">
+            <table class="queue-table">
+                <thead>
                     <tr>
-                        <td>@m.Name</td>
-                        <td>@m.Department</td>
-                        <td>
-                            @(m.UpdatedAt.HasValue
-                                ? m.UpdatedAt.Value.ToString("yyyy-MM-dd")
-                                : m.ApplicationDate.ToString("yyyy-MM-dd"))
-                    </td>
-                    <td>
-                        <span class="status-pill status-pill--verified">
-                            @m.ApplicationStatus
-                        </span>
-                    </td>
-                    <td class="queue-table__action">
-                        @Html.ActionLink(
-                                "Review",
-                                "Detail",
-                                "Review",
-                                new { id = m.MemberId },
-                                new { @class = "btn btn--primary" })
-                    </td>
-                </tr>
-                }
-            </tbody>
-        </table>
+                        <th>Applicant</th>
+                        <th>Department</th>
+                        <th>Verified</th>
+                        <th>Status</th>
+                        <th class="queue-table__action">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var m in Model)
+                    {
+                        <tr>
+                            <td>@m.Name</td>
+                            <td>@m.Department</td>
+                            <td>
+                                @(m.UpdatedAt.HasValue
+                ? m.UpdatedAt.Value.ToString("yyyy-MM-dd")
+                : m.ApplicationDate.ToString("yyyy-MM-dd"))
+                            </td>
+                            <td>
+                                <span class="status-pill status-pill--verified">
+                                    @m.ApplicationStatus
+                                </span>
+                            </td>
+                            <td class="queue-table__action">
+                                @Html.ActionLink(
+                         "Review",
+                         "Detail",
+                         "Review",
+                         new { id = m.MemberId },
+                         new { @class = "btn btn--primary" })
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     }
 </section>

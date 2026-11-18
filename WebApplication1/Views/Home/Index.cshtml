@@ -167,7 +167,11 @@ else
                 <p class="body-md" style="color: var(--on-surface-variant); margin-bottom: 24px;">
                     You have not started a membership application yet.
                 </p>
-                <a href="@Url.Action("Index", "Member")" class="btn btn--primary">Apply Now</a>
+                <div class="dashboard-actions">
+                    <a href="@Url.Action("Index", "Member")" class="btn btn--primary">
+                        Apply Now
+                    </a>
+                </div>
             }
             else if (Model.MembershipStatus == "Active" && Model.CurrentTermStatus == "Active")
             {
@@ -177,10 +181,14 @@ else
                     <strong class="body-lg">Active Member</strong>
                 </div>
                 <p class="body-md">Membership No: <strong>@Model.MembershipNumber</strong></p>
-                <div style="margin-top: 24px; display: flex; gap: 12px; flex-wrap: wrap;">
-                    <a href="@Url.Action("CardV2", "Member")" class="btn btn--primary">View Membership Card</a>
-                    @*<a href="@Url.Action("Card", "Member")" class="btn btn--primary">View Membership Card</a>*@
-                    <a href="@Url.Action("Mine", "Member")" class="btn btn--outline">View History</a>
+                <div class="dashboard-actions">
+                    <a href="@Url.Action("CardV2", "Member")" class="btn btn--primary">
+                        View Membership Card
+                    </a>
+
+                    <a href="@Url.Action("Mine", "Member")" class="btn btn--outline">
+                        My Applications
+                    </a>
                 </div>
             }
             else if (Model.MembershipStatus == "Active" && Model.CurrentTermStatus == "Pending Payment")
@@ -191,8 +199,10 @@ else
                     <strong class="body-lg">Renewal Pending</strong>
                 </div>
                 <p class="body-md">Your membership is active, but your fee for @DateTime.Now.Year is outstanding. Please settle it to avoid suspension.</p>
-                <div style="margin-top: 24px;">
-                    <a href="@Url.Action("Mine", "Member")" class="btn btn--outline">View Status</a>
+                <div class="dashboard-actions">
+                    <a href="@Url.Action("Mine", "Member")" class="btn btn--outline">
+                        My Applications
+                    </a>
                 </div>
             }
             else if (Model.MembershipStatus == "Pending Activation")
@@ -203,8 +213,10 @@ else
                     <strong class="body-lg">Pending Payment</strong>
                 </div>
                 <p class="body-md">Your application is approved! Please proceed to the Club office to pay your admission fee.</p>
-                <div style="margin-top: 24px;">
-                    <a href="@Url.Action("Mine", "Member")" class="btn btn--outline">View Status</a>
+                <div class="dashboard-actions">
+                    <a href="@Url.Action("Mine", "Member")" class="btn btn--outline">
+                        My Applications
+                    </a>
                 </div>
             }
             else if (Model.MembershipStatus == "Suspended")
@@ -215,8 +227,10 @@ else
                     <strong class="body-lg">Membership Suspended</strong>
                 </div>
                 <p class="body-md">Your membership is temporarily inactive due to overdue payments. Please contact the Club Committee to reactivate.</p>
-                <div style="margin-top: 24px;">
-                    <a href="@Url.Action("Mine", "Member")" class="btn btn--outline">View History</a>
+                <div class="dashboard-actions">
+                    <a href="@Url.Action("Mine", "Member")" class="btn btn--outline">
+                        My Applications
+                    </a>
                 </div>
             }
             else if (Model.MembershipStatus == "Cancelled")
@@ -227,8 +241,10 @@ else
                     <strong class="body-lg">Membership Cancelled</strong>
                 </div>
                 <p class="body-md">This membership has been permanently cancelled.</p>
-                <div style="margin-top: 24px;">
-                    <a href="@Url.Action("Mine", "Member")" class="btn btn--outline">View History</a>
+                <div class="dashboard-actions">
+                    <a href="@Url.Action("Mine", "Member")" class="btn btn--outline">
+                        My Applications
+                    </a>
                 </div>
             }
             else
@@ -239,17 +255,19 @@ else
                     <strong class="body-lg">@Model.ApplicationStatus</strong>
                 </div>
                 <p class="body-md">Your application is currently being processed.</p>
-                <div style="margin-top: 24px;">
-                    <a href="@Url.Action("Mine", "Member")" class="btn btn--outline">Track Progress</a>
+                <div class="dashboard-actions">
+                    <a href="@Url.Action("Mine", "Member")" class="btn btn--outline">
+                        My Applications
+                    </a>
                 </div>
             }
         </section>
-
+        
         <!-- ========================================================
              CARD 2: ROLE-SPECIFIC TASKS (Admin Dashboard)
              ======================================================== -->
         @if (user.Role == CrownTowersClub.Infrastructure.Session.DevRoles.DepartmentHead ||
-                             user.Role == CrownTowersClub.Infrastructure.Session.DevRoles.Committee)
+            user.Role == CrownTowersClub.Infrastructure.Session.DevRoles.Committee)
         {
             <section class="card dashboard-card">
                 <h2 class="headline-md section-title">Action Center</h2>
@@ -262,13 +280,18 @@ else
                             <span class="label-sm" style="color: var(--on-surface-variant);">Pending Reviews</span>
                             <div class="display-lg" style="font-size: 32px; margin-top: 8px;">@pendingCount</div>
                         </div>
-                        <a href="@Url.Action("Pending", "Review")" class="btn btn--primary @(pendingCount == 0 ? "disabled" : "")" style="@(pendingCount == 0 ? "pointer-events: none; opacity: 0.5;" : "")">
+                    </div>
+
+                    <div class="dashboard-actions">
+                        <a href="@Url.Action("Pending", "Review")"
+                           class="btn btn--primary @(pendingCount == 0 ? "disabled" : "")"
+                           style="@(pendingCount == 0 ? "pointer-events: none; opacity: 0.5;" : "")">
                             Review Now
                         </a>
                     </div>
                 }
 
-                @if (user.Role == CrownTowersClub.Infrastructure.Session.DevRoles.Committee)
+                else if (user.Role == CrownTowersClub.Infrastructure.Session.DevRoles.Committee)
                 {
                     var verifiedCount = (int)(ViewBag.VerifiedCount ?? 0);
                     var paymentsCount = (int)(ViewBag.PaymentsCount ?? 0);
@@ -278,7 +301,12 @@ else
                             <span class="label-sm" style="color: var(--on-surface-variant);">Verified Applications</span>
                             <div class="display-lg" style="font-size: 32px; margin-top: 8px;">@verifiedCount</div>
                         </div>
-                        <a href="@Url.Action("Verified", "Review")" class="btn btn--primary @(verifiedCount == 0 ? "disabled" : "")" style="@(verifiedCount == 0 ? "pointer-events: none; opacity: 0.5;" : "")">
+                    </div>
+
+                    <div class="dashboard-actions">
+                        <a href="@Url.Action("Verified", "Review")"
+                           class="btn btn--primary @(verifiedCount == 0 ? "disabled" : "")"
+                           style="@(verifiedCount == 0 ? "pointer-events: none; opacity: 0.5;" : "")">
                             Review Now
                         </a>
                     </div>
@@ -288,7 +316,12 @@ else
                             <span class="label-sm" style="color: var(--on-surface-variant);">Pending Payments</span>
                             <div class="display-lg" style="font-size: 32px; margin-top: 8px;">@paymentsCount</div>
                         </div>
-                        <a href="@Url.Action("PaymentDashboard", "Review")" class="btn btn--outline @(paymentsCount == 0 ? "disabled" : "")" style="@(paymentsCount == 0 ? "pointer-events: none; opacity: 0.5;" : "")">
+                    </div>
+                    
+                    <div class="dashboard-actions">
+                        <a href="@Url.Action("PaymentDashboard", "Review")"
+                           class="btn btn--outline @(paymentsCount == 0 ? "disabled" : "")"
+                           style="@(paymentsCount == 0 ? "pointer-events: none; opacity: 0.5;" : "")">
                             Record Payments
                         </a>
                     </div>

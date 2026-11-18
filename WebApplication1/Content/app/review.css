@@ -57,6 +57,13 @@
     min-width: 680px;
 }
 
+
+/* Payment Dashboard Stats */
+
+.dashboard-grid.payment-stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
 .detail-grid {
     display: grid;
     grid-template-columns: minmax(160px, 220px) 1fr;
@@ -454,5 +461,29 @@
         margin: 0 0 12px;
         font-size: 14px;
         line-height: 1.5;
+    }
+
+
+    /* Payment Dashboard */
+
+    .dashboard-grid.payment-stats {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .renewal-controls {
+        width: 100%;
+    }
+
+    .renewal-actions {
+        display: flex;
+        flex: 1 0 100%;
+        flex-direction: column;
+        width: 100%;
+        gap: 12px;
+    }
+
+    .renewal-actions .btn {
+        width: 100%;
+        border-radius: 9px;
     }
 }
