@@ -1,45 +1,201 @@
-﻿<nav class="main-nav"
-     aria-label="Main navigation">
+﻿@model CrownTowersClub.Infrastructure.Session.DevSessionUser
 
-    <div class="nav-container">
+@{
+    var currentController = ViewContext.RouteData.Values["controller"] as string ?? "";
+    var currentAction = ViewContext.RouteData.Values["action"] as string ?? "";
 
-        <a class="nav-brand"
-           href="@Url.Action("Index", "Member")">
-            Crown Towers Club
-        </a>
+    bool isHome = currentController == "Home";
 
-        <button type="button"
-                class="nav-toggle"
-                aria-label="Toggle navigation"
-                aria-expanded="false"
-                aria-controls="club-nav-links">
+    bool isMyApplications =
+        currentController == "Member" && currentAction == "Mine";
 
-            <span class="nav-toggle__icon"
-                  aria-hidden="true">☰</span>
-        </button>
+    bool isScan =
+        currentController == "Member" && currentAction == "Scan";
 
-        <div class="nav-links"
-             id="club-nav-links">
+    bool isPending =
+        currentController == "Review" && currentAction == "Pending";
 
-            <a href="@Url.Action("Index", "Member")">
-                Application
-            </a>
+    bool isVerified =
+        currentController == "Review" && currentAction == "Verified";
 
-            <a href="@Url.Action("Index", "DepartmentHead")">
-                Department Head
-            </a>
+    bool isPayments =
+        currentController == "Review" && currentAction == "PaymentDashboard";
 
-            <a href="@Url.Action("Index", "ClubCommittee")">
-                Club Committee
-            </a>
+    bool isDirectory =
+        currentController == "Review" && currentAction == "Directory";
+}
 
-            <a href="@Url.Action("Index", "Payment")">
-                Payment
-            </a>
+<aside class="app-sidebar" aria-label="Main sidebar">
 
-            <a href="@Url.Action("Index", "Membership")">
-                Memberships
-            </a>
+    <!-- BRAND -->
+    <a href="@Url.Action("Index", "Home")" class="sidebar-brand">
+
+        <div class="sidebar-logo">
+            <img src="@Url.Content("~/Content/app/images/krctk-logo.png")"
+                 alt="Crown Towers Club Logo" />
         </div>
+
+        <div class="sidebar-brand-text">
+            <strong>Crown Towers Club</strong>
+            <span>Membership System</span>
+        </div>
+
+    </a>
+
+
+    <!-- NAVIGATION -->
+    <nav class="sidebar-nav" aria-label="Main navigation">
+
+        <!-- SHARED LINKS -->
+        <div class="sidebar-section">
+
+            <span class="sidebar-section-title">GENERAL</span>
+
+            <a href="@Url.Action("Index", "Home")"
+               class="sidebar-link @(isHome ? "is-active" : "")"
+               @(isHome ? "aria-current=page" : "")>
+
+                <span class="material-symbols-outlined">home</span>
+                <span>Home</span>
+            </a>
+
+            <a href="@Url.Action("Mine", "Member")"
+               class="sidebar-link @(isMyApplications ? "is-active" : "")"
+               @(isMyApplications ? "aria-current=page" : "")>
+
+                <span class="material-symbols-outlined">description</span>
+                <span>My Applications</span>
+            </a>
+
+            <a href="@Url.Action("Scan", "Member")"
+               class="sidebar-link @(isScan ? "is-active" : "")"
+               @(isScan ? "aria-current=page" : "")>
+
+                <span class="material-symbols-outlined">qr_code_scanner</span>
+                <span>Scan Membership</span>
+            </a>
+
+        </div>
+
+
+        <!-- DEPARTMENT HEAD LINKS -->
+        @if (Model.Role == CrownTowersClub.Infrastructure.Session.DevRoles.DepartmentHead)
+        {
+            <div class="sidebar-section">
+
+                <span class="sidebar-section-title">DEPARTMENT HEAD</span>
+
+                <a href="@Url.Action("Pending", "Review")"
+                   class="sidebar-link @(isPending ? "is-active" : "")"
+                   @(isPending ? "aria-current=page" : "")>
+
+                    <span class="material-symbols-outlined">fact_check</span>
+                    <span>Pending Reviews</span>
+                </a>
+
+            </div>
+        }
+
+
+        <!-- CLUB COMMITTEE LINKS -->
+        @if (Model.Role == CrownTowersClub.Infrastructure.Session.DevRoles.Committee)
+        {
+            <div class="sidebar-section">
+
+                <span class="sidebar-section-title">CLUB COMMITTEE</span>
+
+                <a href="@Url.Action("Verified", "Review")"
+                   class="sidebar-link @(isVerified ? "is-active" : "")"
+                   @(isVerified ? "aria-current=page" : "")>
+
+                    <span class="material-symbols-outlined">verified</span>
+                    <span>Verified Applications</span>
+                </a>
+
+                <a href="@Url.Action("PaymentDashboard", "Review")"
+                   class="sidebar-link @(isPayments ? "is-active" : "")"
+                   @(isPayments ? "aria-current=page" : "")>
+
+                    <span class="material-symbols-outlined">payments</span>
+                    <span>Payments Dashboard</span>
+                </a>
+
+                <a href="@Url.Action("Directory", "Review")"
+                   class="sidebar-link @(isDirectory ? "is-active" : "")"
+                   @(isDirectory ? "aria-current=page" : "")>
+
+                    <span class="material-symbols-outlined">groups</span>
+                    <span>All Applications</span>
+                </a>
+
+                <a href="@Url.Action("Index", "Member", new { manual = true })"
+                   class="sidebar-link">
+
+                    <span class="material-symbols-outlined">person_add</span>
+                    <span>Manual Form</span>
+                </a>
+
+            </div>
+        }
+
+    </nav>
+
+
+    <!-- USER PROFILE AT BOTTOM -->
+    <div class="sidebar-footer">
+
+        <div class="user-dropdown sidebar-user-dropdown"
+             id="user-dropdown">
+
+            <!-- PROFILE BUTTON -->
+            <button type="button"
+                    class="user-profile-btn sidebar-user-profile"
+                    id="user-profile-trigger"
+                    aria-haspopup="true"
+                    aria-expanded="false">
+
+                <div class="avatar">
+
+                    <span class="material-symbols-outlined">
+                        person
+                    </span>
+
+                </div>
+
+                <div class="sidebar-user-details">
+
+                    <strong>@Model.Name</strong>
+
+                    <span>@Model.Role</span>
+
+                </div>
+
+                <span class="material-symbols-outlined sidebar-user-arrow">
+                    expand_less
+                </span>
+
+            </button>
+
+
+            <!-- DROPDOWN ABOVE PROFILE -->
+            <div class="dropdown-menu sidebar-user-menu"
+                 id="user-dropdown-menu">
+
+                <a href="@Url.Action("Logout", "DevSession")"
+                   class="dropdown-item">
+
+                    <span class="material-symbols-outlined">
+                        swap_horiz
+                    </span>
+
+                    Switch Role
+
+                </a>
+
+            </div>
+
+        </div>
+
     </div>
-</nav>
+
+</aside>

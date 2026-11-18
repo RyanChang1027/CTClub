@@ -2,120 +2,42 @@
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>
-        @ViewBag.Title - Crown Towers Club
-    </title>
+    <title>@ViewBag.Title - Crown Towers Club</title>
 
     @Styles.Render("~/bundles/vendor-css", "~/bundles/app-css")
-
 </head>
 <body>
 
     @{
-        var devUser = Session[CrownTowersClub.Infrastructure.Session.DevSessionKeys.User]
-            as CrownTowersClub.Infrastructure.Session.DevSessionUser;
+        var devUser = Session[
+            CrownTowersClub.Infrastructure.Session.DevSessionKeys.User
+        ] as CrownTowersClub.Infrastructure.Session.DevSessionUser;
     }
 
-    <header class="app-bar full-width">
-        <div class="app-bar-inner">
+    @if (devUser != null)
+    {
+        <div class="app-shell">
 
-            <!-- ==========================================
-                 LEFT SIDE: Logo + Navigation
-                 ========================================== -->
-            <div class="app-bar-left">
-                <a href="@Url.Action("Index", "Home")" class="app-bar-brand">
-                    <div class="logo-container">
-                        <img src="@Url.Content("~/Content/app/images/krctk-logo.png")"
-                             alt="KRCTK Logo"
-                             class="app-logo" />
-                    </div>
-                </a>
+            @Html.Partial("_Navigation", devUser)
 
-                @if (devUser != null)
-                {
-            <nav class="app-nav">
-
-                @Html.ActionLink("Home", "Index", "Home", null, new { @class = "app-nav-link" })
-                @Html.ActionLink("My Applications", "Mine", "Member", null, new { @class = "app-nav-link" })
-                @Html.ActionLink("Scan Membership", "Scan", "Member", null, new { @class = "app-nav-link" })
-
-                @if (devUser.Role == CrownTowersClub.Infrastructure.Session.DevRoles.DepartmentHead)
-                {
-                    @Html.ActionLink("Pending Reviews", "Pending", "Review", null, new { @class = "app-nav-link" })
-                }
-
-                @if (devUser.Role == CrownTowersClub.Infrastructure.Session.DevRoles.Committee)
-                {
-                    @Html.ActionLink("Verified Applications", "Verified", "Review", null, new { @class = "app-nav-link" })
-                    @Html.ActionLink("Payments Dashboard", "PaymentDashboard", "Review", null, new { @class = "app-nav-link" })
-
-
-                    <!-- Group less-used links -->
-                    <div class="nav-dropdown">
-                        <button type="button" class="app-nav-link" id="nav-more-trigger" aria-haspopup="true" aria-expanded="false">
-                            More ▾
-                        </button>
-
-                        <!-- Make sure this has an ID -->
-                        <div class="dropdown-menu" id="nav-more-menu">
-                            @Html.ActionLink("All Applications", "Directory", "Review", null, new { @class = "dropdown-item" })
-                            @Html.ActionLink("Manual Form", "Index", "Member", new { manual = true }, new { @class = "dropdown-item" })
-                            @*@Html.ActionLink("Payments Dashboard", "PaymentDashboard", "Review", null, new { @class = "dropdown-item" })*@
-                        </div>
-                    </div>
-                }
-            </nav>
-                }
-            </div>
-
-            <!-- ==========================================
-                 RIGHT SIDE: User Dropdown Menu
-                 ========================================== -->
-            @if (devUser != null)
-            {
-                <div class="app-bar-right">
-                    <div class="user-dropdown" id="user-dropdown">
-
-                        <!-- Trigger Button -->
-                        <button type="button" class="user-profile-btn" id="user-profile-trigger" aria-haspopup="true" aria-expanded="false">
-                            <div class="user-details">
-                                <span class="app-bar-user-name">@devUser.Name</span>
-                                <span class="app-bar-user-role label-sm">@devUser.Role</span>
-                            </div>
-                            <div class="avatar">
-                                <!-- Using Material Icon for Person -->
-                                <span class="material-symbols-outlined" style="font-size: 20px;">person</span>
-                            </div>
-                        </button>
-
-                        <!-- Dropdown Menu -->
-                        <div class="dropdown-menu" id="user-dropdown-menu">
-                            @*<div class="dropdown-header">
-                                    <strong>@devUser.Name</strong><br />
-                                    <span class="label-sm">@devUser.Role</span>
-                                </div>
-                                <div class="dropdown-divider"></div>*@
-
-                            @Html.ActionLink("Switch Role", "Logout", "DevSession", null, new { @class = "dropdown-item" })
-                        </div>
-                    </div>
-                </div>
-            }
+            <main class="main app-main" aria-live="polite">
+                @RenderBody()
+            </main>
 
         </div>
-    </header>
-
-
-    <main class="main" aria-live="polite">
-        @RenderBody()
-    </main>
-
+    }
+    else
+    {
+        <main class="main" aria-live="polite">
+            @RenderBody()
+        </main>
+    }
 
     @Scripts.Render("~/bundles/vendor-js")
     @Scripts.Render("~/bundles/app-shell")
     @RenderSection("scripts", required: false)
+
 </body>
 </html>

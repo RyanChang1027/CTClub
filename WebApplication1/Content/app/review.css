@@ -24,10 +24,26 @@
     text-transform: uppercase;
 }
 
+.queue-table tbody tr td {
+    transition: background-color var(--transition-fast);
+}
+
+.queue-table tbody tr:hover td {
+    background-color: #fff1cc;
+}
+
 .queue-table__action {
     text-align: right;
+    vertical-align: middle;
     width: 1%;
     white-space: nowrap;
+}
+
+.queue-table__action .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    vertical-align: middle;
 }
 
 .detail-grid {
@@ -54,39 +70,56 @@
 }
 
 .status-pill {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    vertical-align: middle;
+    box-sizing: border-box;
+    min-height: 26px;
     padding: 4px 12px;
+    border: 1px solid transparent;
     border-radius: var(--radius-pill);
-    font-size: 12px;
-    line-height: 16px;
+    font-size: 13px;
+    line-height: 18px;
     font-weight: 700;
     letter-spacing: 0.02em;
-    background: var(--surface-container-high);
-    color: var(--on-surface-variant);
 }
 
-.status-pill--pending  { background: #fef3c7; color: #92400e; }
-.status-pill--verified { background: #dbeafe; color: #1e40af; }
-.status-pill--approved { background: #dcfce7; color: #14532d; }
-.status-pill--rejected { background: #fee2e2; color: #7f1d1d; }
-.status-pill--draft    { background: var(--surface-container-high); color: var(--on-surface-variant); }
-.status-pill--returned { background: #fef3c7; color: #92400e;}
+/* Application Statuses */
+.status-pill--pending,
+.status-pill--returned {
+    background: #FDE68A;
+    color: #78350F;
+    border-color: #D97706;
+}
 
-/* Membership Statuses */
+.status-pill--verified {
+    background: #BFDBFE;
+    color: #1E3A8A;
+    border-color: #60A5FA;
+}
+
+.status-pill--approved,
 .status-pill--active {
-    background: #dcfce7;
-    color: #14532d;
+    background: #BBF7D0;
+    color: #14532D;
+    border-color: #4ADE80;
 }
 
-.status-pill--expired {
-    background: #e5e7eb;
-    color: #374151;
-}
-
+.status-pill--rejected,
 .status-pill--suspended,
 .status-pill--cancelled {
-    background: #fee2e2;
-    color: #991b1b;
+    background: #FECACA;
+    color: #7F1D1D;
+    border-color: #F87171;
+}
+
+.status-pill--draft,
+.status-pill--expired,
+.status-pill--neutral {
+    background: #E2E8F0;
+    color: #334155;
+    border-color: #94A3B8;
 }
 
 .btn--warning {

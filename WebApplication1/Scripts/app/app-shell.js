@@ -30,11 +30,13 @@ App.Shell = (function (window, document) {
         trigger.addEventListener("click", function (e) {
             e.stopPropagation();
 
-            // Close all other open dropdowns first
+            // Check whether this dropdown is currently open
+            var isOpen = menu.classList.contains("is-open");
+
+            // Close all other open dropdowns
             closeAllDropdowns();
 
-            // Toggle this one
-            var isOpen = menu.classList.contains("is-open");
+            // Only reopen if it was previously closed
             if (!isOpen) {
                 menu.classList.add("is-open");
                 trigger.setAttribute("aria-expanded", "true");
