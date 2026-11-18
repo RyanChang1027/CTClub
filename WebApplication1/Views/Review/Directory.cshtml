@@ -89,7 +89,7 @@
                     <th class="hide-mobile">Department</th>
                     <th>Status (@Model.SelectedYear)</th>
                     <th class="hide-mobile">Membership No.</th>
-                    <th></th>
+                    <th class="queue-table__action">Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -112,7 +112,7 @@
                         <td>
                             @if (m.MembershipStatus == "Cancelled")
                             {
-                                <span class="status-pill status-pill--rejected">Cancelled</span>
+                                <span class="status-pill status-pill--neutral">Not Billed</span>
                             }
                             else if (m.MembershipStatus == "Active" && m.CurrentTermStatus == null)
                             {
@@ -148,7 +148,7 @@
                         <!-- Row Actions -->
                         <td class="queue-table__action">
                             <div class="row-actions">
-                                <button type="button" class="btn btn--outline btn-icon-only" data-action-toggle>
+                                <button type="button" class="btn btn--primary btn-icon-only" data-action-toggle>
                                     <span class="material-symbols-outlined">more_vert</span>
                                 </button>
 

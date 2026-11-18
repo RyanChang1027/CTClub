@@ -125,11 +125,11 @@
                             @if (m.ApplicationStatus == CrownTowersClub.Domain.ApplicationStatus.Draft ||
 m.ApplicationStatus == CrownTowersClub.Domain.ApplicationStatus.ReturnedForCorrection)
                             {
-                                @Html.ActionLink("Resume", "Index", "Member", new { NRIC = m.NRIC }, new { @class = "btn btn--outline" })
+                                @Html.ActionLink("Resume", "Index", "Member", new { NRIC = m.NRIC }, new { @class = "btn btn--primary" })
                             }
                             else
                             {
-                                @Html.ActionLink("View", "Detail", "Review", new { id = m.MemberId }, new { @class = "btn btn--outline" })
+                                @Html.ActionLink("View", "Detail", "Review", new { id = m.MemberId }, new { @class = "btn btn--primary" })
                             }
                         </td>
                     </tr>

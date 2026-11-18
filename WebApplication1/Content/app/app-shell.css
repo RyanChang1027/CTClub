@@ -61,8 +61,10 @@
     width: 48px;
     height: 48px;
     padding: 4px;
-    background: #ffffff;
+    border: 2px solid #d6b66b;
     border-radius: 50%;
+    background: #ffffff;
+    box-shadow: 0 2px 8px rgba(214, 182, 107, 0.18)
 }
 
     .sidebar-logo img {
@@ -97,8 +99,42 @@
 
 .sidebar-nav {
     flex: 1;
+    min-height: 0;
     padding-top: 28px;
     overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+}
+
+.sidebar-nav::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sidebar-nav::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.sidebar-nav::-webkit-scrollbar-thumb {
+    background: transparent;
+    border-radius: 10px;
+}
+
+.sidebar-nav::-webkit-scrollbar-thumb:hover {
+    background: #d6b66b;
+}
+
+.sidebar-nav:hover {
+    scrollbar-color: #775a19 transparent;
+}
+
+.sidebar-nav:hover::-webkit-scrollbar-thumb {
+    background: #775a19;
+}
+
+.sidebar-nav::-webkit-scrollbar-button {
+    display: none;
+    width: 0;
+    height: 0;
 }
 
 .sidebar-section {
