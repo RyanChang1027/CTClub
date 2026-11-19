@@ -49,9 +49,7 @@ App.Shell = (function (window, document) {
        2. Dynamic Dropdowns (Directory Table Row Actions)
        ============================================================ */
     function initGlobalDropdownHandlers() {
-        // 1. Handle Row Action toggles
         document.addEventListener("click", function (e) {
-            // Check if we clicked a row action toggle (the 3 dots in the table)
             var toggleBtn = e.target.closest("[data-action-toggle]");
 
             if (toggleBtn) {
@@ -59,50 +57,125 @@ App.Shell = (function (window, document) {
                 e.stopPropagation();
 
                 var menu = toggleBtn.nextElementSibling;
+
+                if (!menu || !menu.classList.contains("row-actions-menu")) {
+                    return;
+                }
+
                 var isOpen = menu.classList.contains("is-open");
 
                 closeAllDropdowns();
 
                 if (!isOpen) {
-                    menu.classList.add("is-open");
+                    openRowActionsMenu(toggleBtn, menu);
                 }
+
                 return;
             }
 
-            // 2. Handle clicking outside to close
-            // If the click target is NOT inside ANY of our dropdown containers, close them.
-            var clickedInsideNav = e.target.closest('.nav-dropdown');
-            var clickedInsideUser = e.target.closest('.user-dropdown');
-            var clickedInsideRow = e.target.closest('.row-actions');
+            var clickedInsideNav = e.target.closest(".nav-dropdown");
+            var clickedInsideUser = e.target.closest(".user-dropdown");
+            var clickedInsideRowMenu = e.target.closest(".row-actions-menu");
 
-            if (!clickedInsideNav && !clickedInsideUser && !clickedInsideRow) {
+            if (!clickedInsideNav && !clickedInsideUser && !clickedInsideRowMenu) {
                 closeAllDropdowns();
             }
         });
 
-        // 3. Close on Escape key
         document.addEventListener("keydown", function (e) {
             if (e.key === "Escape") {
                 closeAllDropdowns();
             }
         });
+
+        // Close the menu if the page or a scrollable container moves.
+        window.addEventListener("scroll", closeAllDropdowns, true);
+        window.addEventListener("resize", closeAllDropdowns);
     }
 
     /* ============================================================
        3. Helper: Close all menus
        ============================================================ */
     function closeAllDropdowns() {
-        var openMenus = document.querySelectorAll(".dropdown-menu.is-open, .row-actions-menu.is-open");
+        var openMenus = document.querySelectorAll(
+            ".dropdown-menu.is-open, .row-actions-menu.is-open"
+        );
 
         for (var i = 0; i < openMenus.length; i++) {
-            openMenus[i].classList.remove("is-open");
+            var menu = openMenus[i];
 
-            // Reset aria-expanded on the trigger if it exists
-            var trigger = openMenus[i].previousElementSibling;
+            menu.classList.remove("is-open");
+
+            // Restore row menus to their original table position.
+            if (menu.classList.contains("row-actions-menu") && menu._originalParent) {
+                if (menu._originalNextSibling &&
+                    menu._originalNextSibling.parentNode === menu._originalParent) {
+                    menu._originalParent.insertBefore(menu, menu._originalNextSibling);
+                } else {
+                    menu._originalParent.appendChild(menu);
+                }
+
+                menu._originalParent = null;
+                menu._originalNextSibling = null;
+
+                menu.style.position = "";
+                menu.style.top = "";
+                menu.style.left = "";
+                menu.style.right = "";
+                menu.style.bottom = "";
+                menu.style.zIndex = "";
+            }
+
+            var trigger = menu.previousElementSibling;
+
             if (trigger && trigger.tagName === "BUTTON") {
                 trigger.setAttribute("aria-expanded", "false");
             }
         }
+    }
+
+    function openRowActionsMenu(toggleBtn, menu) {
+        // Remember where the menu originally belongs.
+        menu._originalParent = menu.parentNode;
+        menu._originalNextSibling = menu.nextSibling;
+
+        // Move it outside the table's scrollable container.
+        document.body.appendChild(menu);
+
+        menu.classList.add("is-open");
+
+        // Position the menu relative to the viewport.
+        menu.style.position = "fixed";
+        menu.style.top = "0px";
+        menu.style.left = "0px";
+        menu.style.right = "auto";
+        menu.style.bottom = "auto";
+        menu.style.zIndex = "10000";
+
+        var buttonRect = toggleBtn.getBoundingClientRect();
+        var menuRect = menu.getBoundingClientRect();
+
+        var spaceBelow = window.innerHeight - buttonRect.bottom;
+        var spaceAbove = buttonRect.top;
+
+        // Open upwards when there isn't enough room below.
+        var openAbove = spaceBelow < menuRect.height + 8 &&
+            spaceAbove > spaceBelow;
+
+        var top = openAbove
+            ? buttonRect.top - menuRect.height - 4
+            : buttonRect.bottom + 4;
+
+        // Keep the menu inside the horizontal viewport.
+        var left = Math.min(
+            buttonRect.right - menuRect.width,
+            window.innerWidth - menuRect.width - 8
+        );
+
+        left = Math.max(8, left);
+
+        menu.style.top = top + "px";
+        menu.style.left = left + "px";
     }
 
     /* ============================================================

@@ -230,28 +230,28 @@
     transition: background-color var(--transition-fast), border-color var(--transition-fast);
 }
 
-    .sidebar-user-profile:hover,
-    .sidebar-user-profile[aria-expanded="true"] {
-        background: rgba(255, 255, 255, 0.12);
-        border-color: rgba(255, 255, 255, 0.12);
-    }
+.sidebar-user-profile:hover,
+.sidebar-user-profile[aria-expanded="true"] {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.12);
+}
 
-    .sidebar-user-profile .avatar {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex: 0 0 42px;
-        width: 42px;
-        height: 42px;
-        background: #ffffff;
-        border: none;
-        border-radius: 50%;
-    }
+.sidebar-user-profile .avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 42px;
+    width: 42px;
+    height: 42px;
+    background: #ffffff;
+    border: none;
+    border-radius: 50%;
+}
 
-        .sidebar-user-profile .avatar .material-symbols-outlined {
-            color: var(--primary);
-            font-size: 23px;
-        }
+.sidebar-user-profile .avatar .material-symbols-outlined {
+    color: var(--primary);
+    font-size: 23px;
+}
 
 .sidebar-user-details {
     display: flex;
@@ -261,24 +261,24 @@
     min-width: 0;
 }
 
-    .sidebar-user-details strong {
-        overflow: hidden;
-        color: #ffffff;
-        font-size: 13px;
-        line-height: 17px;
-        font-weight: 700;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
+.sidebar-user-details strong {
+    overflow: hidden;
+    color: #ffffff;
+    font-size: 13px;
+    line-height: 17px;
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
 
-    .sidebar-user-details span {
-        overflow: hidden;
-        color: rgba(255, 255, 255, 0.65);
-        font-size: 11px;
-        line-height: 15px;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
+.sidebar-user-details span {
+    overflow: hidden;
+    color: rgba(255, 255, 255, 0.65);
+    font-size: 11px;
+    line-height: 15px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
 
 .sidebar-user-arrow {
     flex: 0 0 auto;
@@ -309,10 +309,10 @@
     overflow: hidden;
 }
 
-    .dropdown-menu.is-open {
-        display: block;
-        animation: fadeIn 0.15s ease-out;
-    }
+.dropdown-menu.is-open {
+    display: block;
+    animation: fadeIn 0.15s ease-out;
+}
 
 
 /* Profile dropdown opens ABOVE the profile button */
@@ -337,13 +337,13 @@
     transition: background-color var(--transition-fast);
 }
 
-    .dropdown-item .material-symbols-outlined {
-        font-size: 20px;
-    }
+.dropdown-item .material-symbols-outlined {
+    font-size: 20px;
+}
 
-    .dropdown-item:hover {
-        background: #fee2e2;
-    }
+.dropdown-item:hover {
+    background: #fee2e2;
+}
 
 @keyframes fadeIn {
     from {
@@ -367,16 +367,16 @@
     background: #fffbeb;
 }
 
-    .card--info-banner .section-title {
-        margin-bottom: 8px;
-        padding-bottom: 8px;
-        border-bottom-color: rgba(180, 83, 9, 0.25);
-    }
+.card--info-banner .section-title {
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    border-bottom-color: rgba(180, 83, 9, 0.25);
+}
 
-    .card--info-banner .body-md {
-        margin: 0;
-        color: #78350f;
-    }
+.card--info-banner .body-md {
+    margin: 0;
+    color: #78350f;
+}
 
 
 /* ------------------------------------------------------------
