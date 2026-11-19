@@ -318,6 +318,10 @@
     .hide-mobile { display: none !important; }
 }
 
+/* Membership Details heading - hidden on desktop */
+.membership-details-heading {
+    display: none;
+}
 
 /* ============================================================
    Mobile Responsive
@@ -519,6 +523,7 @@
 
     /* Membership Details heading */
     .queue-table--mobile-cards .membership-details-heading {
+        display: flex;
         grid-column: 1 / -1;
         grid-row: 2;
         margin-top: 10px;
