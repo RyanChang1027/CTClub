@@ -173,6 +173,7 @@
     <Content Include="Content\app\images\chitchat-whatsapp.png" />
     <Content Include="Content\app\images\krctk-logo.png" />
     <Content Include="Content\app\images\[ori]krctk.png" />
+    <Content Include="Content\app\membership-card.css" />
     <Content Include="Content\app\progress-bar.css" />
     <Content Include="Content\app\review.css" />
     <Content Include="Content\app\images\news-whatsapp.png" />
