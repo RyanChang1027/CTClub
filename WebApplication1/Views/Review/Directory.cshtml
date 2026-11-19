@@ -88,7 +88,7 @@
                         <th>Date</th>
                         <th>Applicant</th>
                         <th class="hide-mobile">Department</th>
-                        <th>Status (@Model.SelectedYear)</th>
+                        <th class="directory-desktop-status">Status (@Model.SelectedYear)</th>
                         <th class="hide-mobile">Membership No.</th>
                         <th class="queue-table__action">Action</th>
                     </tr>
@@ -96,51 +96,73 @@
                 <tbody>
                     @foreach (var m in Model.Members)
                     {
+                        // Determine the membership status display.
+                        var statusText = m.ApplicationStatus;
+
+                        var statusClass = m.ApplicationStatus == "Approved" ? "approved"
+                            : m.ApplicationStatus == "Draft" ? "draft"
+                            : m.ApplicationStatus.Contains("Rejected") ? "rejected"
+                            : "pending";
+
+                        if (m.MembershipStatus == "Cancelled")
+                        {
+                            statusText = "Cancelled";
+                            statusClass = "neutral";
+                        }
+                        else if (m.MembershipStatus == "Active" && m.CurrentTermStatus == null)
+                        {
+                            statusText = "Not Billed";
+                            statusClass = "neutral";
+                        }
+                        else if (m.MembershipStatus == "Active" && m.CurrentTermStatus == "Active")
+                        {
+                            statusText = "Active Member";
+                            statusClass = "approved";
+                        }
+                        else if (m.MembershipStatus == "Active" && m.CurrentTermStatus == "Pending Payment")
+                        {
+                            statusText = "Renewal Pending";
+                            statusClass = "pending";
+                        }
+                        else if (m.MembershipStatus == "Pending Activation")
+                        {
+                            statusText = "Pending Activation";
+                            statusClass = "pending";
+                        }
+                        else if (m.MembershipStatus == "Suspended")
+                        {
+                            statusText = "Suspended";
+                            statusClass = "rejected";
+                        }
                     <tr>
                         <!-- Date -->
                         <td data-label="Date">@m.ApplicationDate.ToString("yyyy-MM-dd")</td>
 
                         <!-- Applicant -->
-                        <td data-label="Applicant">
-                            <strong>@m.Name</strong><br />
-                            <span class="label-sm" style="color: var(--on-surface-variant);">@m.NRIC</span>
+                        <td class="directory-applicant-cell" data-label="Applicant">
+                            <div class="directory-applicant-main">
+                                <strong class="directory-applicant-name">@m.Name</strong>
+                                <span class="label-sm directory-applicant-nric"
+                                      style="color: var(--on-surface-variant);">
+                                    @m.NRIC
+                                </span>
+                            </div>
+
+                            <div class="directory-mobile-status">
+                                <span class="status-pill status-pill--@statusClass">
+                                    @statusText
+                                </span>
+                            </div>
                         </td>
 
                         <!-- Department -->
                         <td class="hide-mobile" data-label="Department">@m.Department</td>
 
-                        <!-- Status Logic -->
-                        <td data-label="Status">
-                            @if (m.MembershipStatus == "Cancelled")
-                                        {
-                            <span class="status-pill status-pill--neutral">Not Billed</span>
-                                        }
-                                        else if (m.MembershipStatus == "Active" && m.CurrentTermStatus == null)
-                                        {
-                            <span class="status-pill" style="background: #e2e8f0; color: #475569;">Not Billed</span>
-                                        }
-                                        else if (m.MembershipStatus == "Active" && m.CurrentTermStatus == "Active")
-                                        {
-                            <span class="status-pill status-pill--approved">Active Member</span>
-                                        }
-                                        else if (m.MembershipStatus == "Active" && m.CurrentTermStatus == "Pending Payment")
-                                        {
-                            <span class="status-pill status-pill--pending">Renewal Pending</span>
-                                        }
-                                        else if (m.MembershipStatus == "Pending Activation")
-                                        {
-                            <span class="status-pill status-pill--pending">Pending Activation</span>
-                                        }
-                                        else if (m.MembershipStatus == "Suspended")
-                                        {
-                            <span class="status-pill status-pill--rejected">Suspended</span>
-                                        }
-                                        else
-                                        {
-                            <span class="status-pill status-pill--@(m.ApplicationStatus == "Approved" ? "approved" : m.ApplicationStatus == "Draft" ? "draft" : m.ApplicationStatus.Contains("Rejected") ? "rejected" : "pending")">
-                                @m.ApplicationStatus
+                        <!-- Status -->
+                        <td class="directory-desktop-status" data-label="Status">
+                            <span class="status-pill status-pill--@statusClass">
+                                @statusText
                             </span>
-                                        }
                         </td>
 
                         <!-- Membership No -->
@@ -157,41 +179,41 @@
                                     <a href="@Url.Action("Detail", "Review", new { id = m.MemberId })" class="dropdown-item">View Details</a>
 
                                     @if (m.MembershipStatus == "Pending Activation" || (m.MembershipStatus == "Active" && m.CurrentTermStatus == "Pending Payment"))
-                                        {
-                                    <a href="@Url.Action("PaymentDashboard", "Review", new { year = Model.SelectedYear })" class="dropdown-item">Record Payment</a>
-                                        }
+                                    {
+                                        <a href="@Url.Action("PaymentDashboard", "Review", new { year = Model.SelectedYear })" class="dropdown-item">Record Payment</a>
+                                    }
 
                                     @if (Model.LatestPayments != null && Model.LatestPayments.ContainsKey(m.MemberId))
-                                        {
-                                            var payment = Model.LatestPayments[m.MemberId];
-                                    <a href="#" class="dropdown-item btn-print-receipt"
-                                       data-receipt="@payment.ReceiptNumber"
-                                       data-date="@payment.PaymentDate.ToString("dd MMM yyyy")"
-                                       data-name="@m.Name"
-                                       data-member-no="@m.MembershipNumber"
-                                       data-year="@payment.MembershipYear"
-                                       data-amount="@payment.Amount.ToString("C", currency)"
-                                       data-method="@payment.PaymentMethod"
-                                       data-remarks="@payment.Remarks">
-                                        Print Receipt
-                                    </a>
-                                        }
+                                    {
+                                        var payment = Model.LatestPayments[m.MemberId];
+                                        <a href="#" class="dropdown-item btn-print-receipt"
+                                           data-receipt="@payment.ReceiptNumber"
+                                           data-date="@payment.PaymentDate.ToString("dd MMM yyyy")"
+                                           data-name="@m.Name"
+                                           data-member-no="@m.MembershipNumber"
+                                           data-year="@payment.MembershipYear"
+                                           data-amount="@payment.Amount.ToString("C", currency)"
+                                           data-method="@payment.PaymentMethod"
+                                           data-remarks="@payment.Remarks">
+                                            Print Receipt
+                                        </a>
+                                    }
 
                                     <!-- FIX: Do not allow editing if Cancelled -->
                                     @if (m.MembershipStatus != "Cancelled" && (m.MembershipStatus == "Active" || m.ApplicationStatus == "Approved"))
-                                        {
-                                    <a href="@Url.Action("Edit", "Member", new { id = m.MemberId })" class="dropdown-item">Edit Details</a>
-                                        }
+                                    {
+                                        <a href="@Url.Action("Edit", "Member", new { id = m.MemberId })" class="dropdown-item">Edit Details</a>
+                                    }
 
                                     @if (m.ApplicationStatus == CrownTowersClub.Domain.ApplicationStatus.Draft || m.ApplicationStatus.Contains("Rejected"))
-                                        {
-                                    <button type="button" class="dropdown-item btn-delete-record"
-                                            style="color: var(--danger); width: 100%; text-align: left; background: none; border: none; cursor: pointer;"
-                                            data-id="@m.MemberId"
-                                            data-name="@m.Name">
-                                        Delete Record
-                                    </button>
-                                        }
+                                    {
+                                        <button type="button" class="dropdown-item btn-delete-record"
+                                                style="color: var(--danger); width: 100%; text-align: left; background: none; border: none; cursor: pointer;"
+                                                data-id="@m.MemberId"
+                                                data-name="@m.Name">
+                                            Delete Record
+                                        </button>
+                                    }
                                 </div>
                             </div>
                         </td>
