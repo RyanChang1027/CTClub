@@ -500,43 +500,67 @@ namespace CrownTowersClub.Repositories
         {
             using (IDbConnection db = connectionFactory.Create())
             {
-                var viewModel = new PaymentDashboardViewModel { CurrentTab = tab, SelectedYear = year };
+                var viewModel = new PaymentDashboardViewModel
+                {
+                    CurrentTab = tab,
+                    SelectedYear = year
+                };
 
-                // Stats
-                string statsSql = @"
-                    SELECT 
-                        ISNULL(SUM(CASE WHEN mt.TermStatus = 'Active' THEN p.Amount ELSE 0 END), 0) AS TotalCollected,
-                        ISNULL(SUM(CASE WHEN mt.TermStatus = 'Pending Payment' THEN mt.FeeAmount ELSE 0 END), 0) AS TotalOutstanding,
-                        COUNT(CASE WHEN mt.TermStatus = 'Pending Payment' THEN 1 END) AS PendingCount
+                // 1. Dashboard Statistics
+                const string statsSql = @"
+                    SELECT
+                        ISNULL(SUM(CASE
+                            WHEN mt.TermStatus = 'Active' THEN p.Amount
+                            ELSE 0
+                        END), 0) AS TotalCollected,
+
+                        ISNULL(SUM(CASE
+                            WHEN mt.TermStatus = 'Pending Payment' THEN mt.FeeAmount
+                            ELSE 0
+                        END), 0) AS TotalOutstanding,
+
+                        COUNT(CASE
+                            WHEN mt.TermStatus = 'Pending Payment' THEN 1
+                        END) AS PendingCount
+
                     FROM dbo.MembershipTerms mt
-                    LEFT JOIN dbo.Payments p ON mt.MembershipTermId = p.MembershipTermId
+                    LEFT JOIN dbo.Payments p
+                        ON mt.MembershipTermId = p.MembershipTermId
                     WHERE mt.MembershipYear = @Year;";
 
-                var stats = db.QuerySingle<dynamic>(statsSql, new { Year = year });
+                var stats = db.QuerySingle<dynamic>(
+                    statsSql,
+                    new { Year = year }
+                );
+
                 viewModel.TotalCollected = (decimal)stats.TotalCollected;
                 viewModel.TotalOutstanding = (decimal)stats.TotalOutstanding;
                 viewModel.PendingCount = (int)stats.PendingCount;
 
-                // Data
-                if (tab == "History")
-                {
-                    string historySql = @"
-                        SELECT p.*, mt.MembershipYear, m.Name, ms.MembershipNumber, ms.MemberId
-                        FROM dbo.Payments p
-                        INNER JOIN dbo.MembershipTerms mt ON p.MembershipTermId = mt.MembershipTermId
-                        INNER JOIN dbo.Memberships ms ON mt.MembershipId = ms.MembershipId
-                        INNER JOIN dbo.Members m ON ms.MemberId = m.MemberId
-                        WHERE mt.MembershipYear = @Year
-                        ORDER BY p.PaymentDate DESC;";
+                // 2. Load both payment lists.
+                const string historySql = @"
+                    SELECT
+                        p.*,
+                        mt.MembershipYear,
+                        m.Name,
+                        ms.MembershipNumber,
+                        ms.MemberId
+                    FROM dbo.Payments p
+                    INNER JOIN dbo.MembershipTerms mt
+                        ON p.MembershipTermId = mt.MembershipTermId
+                    INNER JOIN dbo.Memberships ms
+                        ON mt.MembershipId = ms.MembershipId
+                    INNER JOIN dbo.Members m
+                        ON ms.MemberId = m.MemberId
+                    WHERE mt.MembershipYear = @Year
+                    ORDER BY p.PaymentDate DESC;";
 
-                    viewModel.PaymentHistory = db.Query<Payment>(historySql, new { Year = year }).ToList();
-                    viewModel.PendingPayments = new List<PendingPaymentViewModel>();
-                }
-                else
-                {
-                    viewModel.PendingPayments = GetPendingPayments(year);
-                    viewModel.PaymentHistory = new List<Payment>();
-                }
+                viewModel.PaymentHistory = db.Query<Payment>(
+                    historySql,
+                    new { Year = year }
+                ).ToList();
+
+                viewModel.PendingPayments = GetPendingPayments(year);
 
                 return viewModel;
             }

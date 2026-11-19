@@ -1,0 +1,140 @@
+﻿@model IReadOnlyList<CrownTowersClub.Models.Member>
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "My Applications";
+
+    var devUser = Session[CrownTowersClub.Infrastructure.Session.DevSessionKeys.User]
+        as CrownTowersClub.Infrastructure.Session.DevSessionUser;
+
+    // Get the most recent application for the progress bar
+    var latestApp = Model != null && Model.Count > 0 ? Model.FirstOrDefault() : null;
+
+    // Determine progress step (0 to 4)
+    int currentStep = 0;
+    if (latestApp != null)
+    {
+        if (latestApp.MembershipStatus == "Active") { currentStep = 4; }
+        else if (latestApp.ApplicationStatus == "Approved") { currentStep = 3; }
+        else if (latestApp.ApplicationStatus == "Verified") { currentStep = 2; }
+        else if (latestApp.ApplicationStatus == "Pending for Verification") { currentStep = 1; }
+    }
+}
+
+@Styles.Render("~/Content/app/progress-bar.css")
+
+<section class="hero">
+    <h1 class="display-lg">My Applications</h1>
+    <p class="body-lg">
+        Track the status of your Crown Towers Club membership.
+    </p>
+</section>
+
+@if (latestApp != null)
+{
+    <section class="card" style="margin-bottom: 24px;">
+        <h2 class="headline-md" style="margin-bottom: 24px;">Current Progress</h2>
+
+        <div class="stepper-wrapper">
+            <!-- Step 1: Submitted -->
+            <div class="stepper-item @(currentStep >= 1 ? "completed" : "")">
+                <div class="step-counter">1</div>
+                <div class="step-name">Submitted</div>
+            </div>
+
+            <!-- Step 2: Dept Head Verified -->
+            <div class="stepper-item @(currentStep >= 2 ? "completed" : "")">
+                <div class="step-counter">2</div>
+                <div class="step-name">Dept Head Verified</div>
+            </div>
+
+            <!-- Step 3: Committee Approved -->
+            <div class="stepper-item @(currentStep >= 3 ? "completed" : "")">
+                <div class="step-counter">3</div>
+                <div class="step-name">Committee Approved</div>
+            </div>
+
+            <!-- Step 4: Active -->
+            <div class="stepper-item @(currentStep >= 4 ? "completed" : "")">
+                <div class="step-counter">4</div>
+                <div class="step-name">Active Member</div>
+            </div>
+        </div>
+
+        @if (latestApp.ApplicationStatus.Contains("Rejected") || latestApp.ApplicationStatus == "Returned for Correction")
+        {
+            <div style="margin-top: 24px; padding: 16px; background: #fee2e2; color: #7f1d1d; border-radius: 6px;">
+                <strong>Action Required:</strong> Your application is currently @latestApp.ApplicationStatus. Please review the reason below.
+            </div>
+        }
+    </section>
+}
+
+<section class="card">
+    @if (Model == null || Model.Count == 0)
+    {
+        <p class="body-md">
+            You have not submitted any applications yet.
+        </p>
+        <div class="actions">
+            @Html.ActionLink(
+                "Apply now",
+                "Index",
+                "Member",
+                new { NRIC = devUser != null ? devUser.NRIC : null },
+                new { @class = "btn btn--outline" })
+        </div>
+    }
+    else
+    {
+        <table class="queue-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>App. Status</th>
+                    <th>Membership No.</th>
+                    <th>Mbr. Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var m in Model)
+                {
+                    <tr>
+                        <td>@m.ApplicationDate.ToString("yyyy-MM-dd")</td>
+                        <td>
+                            <span class="status-pill status-pill--@(m.ApplicationStatus == CrownTowersClub.Domain.ApplicationStatus.Approved ? "approved" : m.ApplicationStatus == CrownTowersClub.Domain.ApplicationStatus.Draft ? "draft" : m.ApplicationStatus.Contains("Rejected") ? "rejected" : m.ApplicationStatus == CrownTowersClub.Domain.ApplicationStatus.ReturnedForCorrection ? "returned" : "pending")">
+                                @m.ApplicationStatus
+                            </span>
+                        </td>
+                        <td>@(m.MembershipNumber ?? "-")</td>
+                        <td>
+                            @if (m.MembershipStatus == "Pending Activation")
+                            {
+                                <span class="status-pill status-pill--pending">@m.MembershipStatus</span>
+                            }
+                            else if (m.MembershipStatus == "Active")
+                            {
+                                <span class="status-pill status-pill--approved">@m.MembershipStatus</span>
+                            }
+                            else
+                            {
+                                @(m.MembershipStatus ?? "-")
+                            }
+                        </td>
+                        <td class="queue-table__action">
+                            @if (m.ApplicationStatus == CrownTowersClub.Domain.ApplicationStatus.Draft ||
+m.ApplicationStatus == CrownTowersClub.Domain.ApplicationStatus.ReturnedForCorrection)
+                            {
+                                @Html.ActionLink("Resume", "Index", "Member", new { NRIC = m.NRIC }, new { @class = "btn btn--outline" })
+                            }
+                            else
+                            {
+                                @Html.ActionLink("View", "Detail", "Review", new { id = m.MemberId }, new { @class = "btn btn--outline" })
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</section>

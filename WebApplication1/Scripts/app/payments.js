@@ -11,6 +11,7 @@ App.Payments = (function (window, document, $, notifications) {
         bindRenewalGenerator();
         bindExpiryCheck();
         bindYearFilter();
+        bindPaymentTabs();
     }
 
     /* ============================================================
@@ -245,7 +246,43 @@ App.Payments = (function (window, document, $, notifications) {
     }
 
     /* ============================================================
-       4. Year Filter (Dropdown -> Redirect)
+   4. Payment Tabs (Switch Content Without Reloading)
+   ============================================================ */
+    function bindPaymentTabs() {
+        var tabs = document.querySelectorAll("[data-payment-tab]");
+
+        for (var i = 0; i < tabs.length; i++) {
+            tabs[i].addEventListener("click", function () {
+                var selectedTab = this.getAttribute("data-payment-tab");
+
+                // Update active tab styling.
+                for (var j = 0; j < tabs.length; j++) {
+                    tabs[j].classList.toggle(
+                        "is-active",
+                        tabs[j].getAttribute("data-payment-tab") === selectedTab
+                    );
+                }
+
+                // Show the selected content and hide the other.
+                var pendingContent = document.getElementById("payment-tab-pending");
+                var historyContent = document.getElementById("payment-tab-history");
+
+                if (pendingContent) {
+                    pendingContent.style.display = selectedTab === "Pending" ? "" : "none";
+                }
+
+                if (historyContent) {
+                    historyContent.style.display = selectedTab === "History" ? "" : "none";
+                }
+
+                // Keep the year filter synchronized with the selected tab.
+                config.currentTab = selectedTab;
+            });
+        }
+    }
+
+    /* ============================================================
+       5. Year Filter (Dropdown -> Redirect)
        ============================================================ */
     function bindYearFilter() {
         var yearFilter = document.getElementById("dashboard-year-filter");

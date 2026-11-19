@@ -8,6 +8,7 @@ App.Shell = (function (window, document) {
         initGlobalDropdownHandlers();
         initPrintReceiptHandlers();
         initDeleteHandlers();
+        initMobileNavigation();
     }
 
     /* ============================================================
@@ -248,6 +249,74 @@ App.Shell = (function (window, document) {
         })
         .fail(function () {
             if (window.Swal) window.Swal.fire("Error", "A server error occurred.", "error");
+        });
+    }
+
+    function initMobileNavigation() {
+        var toggle = document.getElementById("mobile-nav-toggle");
+        var sidebar = document.getElementById("app-sidebar");
+        var backdrop = document.getElementById("sidebar-backdrop");
+
+        if (!toggle || !sidebar || !backdrop) {
+            return;
+        }
+
+        function openMenu() {
+            sidebar.classList.add("is-open");
+            backdrop.classList.add("is-visible");
+            document.body.classList.add("mobile-nav-open");
+
+            toggle.setAttribute("aria-expanded", "true");
+            toggle.setAttribute("aria-label", "Close navigation menu");
+
+            sidebar.focus();
+        }
+
+        function closeMenu(returnFocus) {
+            sidebar.classList.remove("is-open");
+            backdrop.classList.remove("is-visible");
+            document.body.classList.remove("mobile-nav-open");
+
+            toggle.setAttribute("aria-expanded", "false");
+            toggle.setAttribute("aria-label", "Open navigation menu");
+
+            if (returnFocus) {
+                toggle.focus();
+            }
+        }
+
+        toggle.addEventListener("click", function () {
+            if (sidebar.classList.contains("is-open")) {
+                closeMenu(true);
+            } else {
+                openMenu();
+            }
+        });
+
+        backdrop.addEventListener("click", function () {
+            closeMenu(true);
+        });
+
+        // Close the drawer after selecting a navigation link.
+        sidebar.addEventListener("click", function (event) {
+            if (event.target.closest("a")) {
+                closeMenu(false);
+            }
+        });
+
+        // Close the drawer when pressing Escape.
+        document.addEventListener("keydown", function (event) {
+            if (event.key === "Escape" &&
+                sidebar.classList.contains("is-open")) {
+                closeMenu(true);
+            }
+        });
+
+        // Close the drawer when returning to desktop width.
+        window.addEventListener("resize", function () {
+            if (window.innerWidth > 767) {
+                closeMenu(false);
+            }
         });
     }
 

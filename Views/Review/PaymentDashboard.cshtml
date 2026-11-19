@@ -1,0 +1,231 @@
+﻿@model CrownTowersClub.ViewModels.PaymentDashboardViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Payment Dashboard";
+
+    // Reusable currency formatter for Malaysian Ringgit
+    var currency = System.Globalization.CultureInfo.CreateSpecificCulture("ms-MY");
+}
+
+<!-- ============================================================
+     1. HERO SECTION
+     ============================================================ -->
+<section class="hero">
+    <h1 class="display-lg">Payment Dashboard</h1>
+    <p class="body-lg">Track outstanding fees, record payments, and manage renewals.</p>
+</section>
+
+<!-- ============================================================
+     2. RENEWAL GENERATOR CARD
+     ============================================================ -->
+<section class="card card--theme-blue" style="margin-bottom: 24px;">
+    <div class="flex justify-between items-center flex-wrap" style="gap: 16px;">
+        <div>
+            <h2 class="headline-md" style="margin-bottom: 4px;">Generate Renewals</h2>
+            <p class="body-md" style="color: var(--on-surface-variant);">
+                Create pending payment terms for the upcoming year for all Active and Suspended members.
+            </p>
+        </div>
+
+        <div class="flex items-end" style="gap: 12px; flex-wrap: wrap;">
+            <!-- Renewal Inputs (No Form) -->
+            <div>
+                <label class="form-label label-sm" for="renewal-year">Year</label>
+                <input type="number" id="renewal-year" class="form-input" value="@Model.NextYear" style="width: 100px; min-height: 40px; padding: 8px;" required />
+            </div>
+            <div>
+                <label class="form-label label-sm" for="renewal-fee">Fee (RM)</label>
+                <input type="number" id="renewal-fee" class="form-input" value="@Model.DefaultRenewalFee" step="0.01" style="width: 120px; min-height: 40px; padding: 8px;" required />
+            </div>
+            <button type="button" id="btn-generate-renewals" class="btn btn--primary" style="min-height: 40px;">Generate</button>
+
+            <!-- Overdue Check Button -->
+            <button type="button" id="btn-run-expiry-check" class="btn btn--outline" style="min-height: 40px;">
+                Run Overdue Check
+            </button>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================================
+     3. STATS CARDS
+     ============================================================ -->
+<div class="dashboard-grid" style="margin-bottom: 24px; grid-template-columns: repeat(3, 1fr);">
+    <div class="card card--theme-green">
+        <span class="label-sm" style="color: var(--on-surface-variant);">Total Collected (@Model.SelectedYear)</span>
+        <h2 class="display-lg" style="font-size: 32px; margin-top: 8px;">
+            @Model.TotalCollected.ToString("C", currency)
+        </h2>
+    </div>
+    <div class="card card--theme-gold">
+        <span class="label-sm" style="color: var(--on-surface-variant);">Total Outstanding (@Model.SelectedYear)</span>
+        <h2 class="display-lg" style="font-size: 32px; margin-top: 8px; color: var(--danger);">
+            @Model.TotalOutstanding.ToString("C", currency)
+        </h2>
+    </div>
+    <div class="card card--theme-blue">
+        <span class="label-sm" style="color: var(--on-surface-variant);">Pending Payments</span>
+        <h2 class="display-lg" style="font-size: 32px; margin-top: 8px;">@Model.PendingCount</h2>
+    </div>
+</div>
+
+<!-- ============================================================
+     4. MAIN DATA TABLE (Tabs & Content)
+     ============================================================ -->
+<section class="card" style="padding: 0;">
+
+    <!-- 4a. TABS & YEAR FILTER HEADER -->
+    <div class="flex justify-between items-center flex-wrap" style="padding: 16px 24px 0 24px; border-bottom: 1px solid var(--outline-variant); gap: 16px;">
+
+        <!-- Tabs -->
+        <div class="directory-tabs" style="border-bottom: none; margin-bottom: 0;">
+            <a href="@Url.Action("PaymentDashboard", new { tab = "Pending", year = Model.SelectedYear })"
+               class="directory-tab @(Model.CurrentTab == "Pending" ? "is-active" : "")">
+                Pending Payments
+            </a>
+            <a href="@Url.Action("PaymentDashboard", new { tab = "History", year = Model.SelectedYear })"
+               class="directory-tab @(Model.CurrentTab == "History" ? "is-active" : "")">
+                Payment History
+            </a>
+        </div>
+
+        <!-- Year Filter (Handled by JS) -->
+        <div style="margin-bottom: 12px;">
+            <select id="dashboard-year-filter" class="form-select" style="min-height: 36px; padding: 4px 32px 4px 12px; font-weight: 600;">
+                @{
+                    int currentYear = DateTime.Now.Year;
+                    for (int y = currentYear - 2; y <= currentYear + 2; y++)
+                    {
+                        <option value="@y" selected="@(Model.SelectedYear == y)">Year: @y</option>
+                    }
+                }
+            </select>
+        </div>
+    </div>
+
+    <div style="padding: 24px;">
+
+        <!-- 4b. TAB CONTENT: PENDING PAYMENTS -->
+        @if (Model.CurrentTab == "Pending")
+        {
+            if (Model.PendingPayments == null || Model.PendingPayments.Count == 0)
+            {
+                <div style="text-align: center; padding: 40px 0; color: var(--on-surface-variant);">
+                    <span class="material-symbols-outlined" style="font-size: 48px; margin-bottom: 16px; opacity: 0.5;">check_circle</span>
+                    <p class="body-lg">All payments for @Model.SelectedYear are up to date!</p>
+                </div>
+            }
+            else
+            {
+                <table class="queue-table">
+                    <thead>
+                        <tr>
+                            <th>Mbr. Number</th>
+                            <th>Applicant</th>
+                            <th>Year</th>
+                            <th>Amount Due</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var m in Model.PendingPayments)
+                        {
+                            <tr>
+                                <td><strong>@m.MembershipNumber</strong></td>
+                                <td>
+                                    @m.Name<br />
+                                    <span class="label-sm" style="color: var(--on-surface-variant);">@m.NRIC</span>
+                                </td>
+                                <td>@m.MembershipYear</td>
+                                <td><strong>@m.FeeAmount.ToString("C", currency)</strong></td>
+                                <td class="queue-table__action">
+                                    <button class="btn btn--primary btn-record-payment"
+                                            type="button"
+                                            data-term-id="@m.MembershipTermId"
+                                            data-amount="@m.FeeAmount"
+                                            data-name="@m.Name">
+                                        Record Payment
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        }
+
+        <!-- 4c. TAB CONTENT: PAYMENT HISTORY -->
+        @if (Model.CurrentTab == "History")
+        {
+            if (Model.PaymentHistory == null || Model.PaymentHistory.Count == 0)
+            {
+                <p class="body-md" style="text-align: center; padding: 40px 0; color: var(--on-surface-variant);">
+                    No payment history found for @Model.SelectedYear.
+                </p>
+            }
+            else
+            {
+                <table class="queue-table">
+                    <thead>
+                        <tr>
+                            <th>Receipt No.</th>
+                            <th>Date</th>
+                            <th>Applicant</th>
+                            <th>Year</th>
+                            <th>Amount</th>
+                            <th>Method</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var p in Model.PaymentHistory)
+                        {
+                            <tr>
+                                <td><strong>@p.ReceiptNumber</strong></td>
+                                <td>@p.PaymentDate.ToString("yyyy-MM-dd")</td>
+                                <td>@p.Name</td>
+                                <td>@p.MembershipYear</td>
+                                <td>@p.Amount.ToString("C", currency)</td>
+                                <td>@p.PaymentMethod</td>
+                                <td class="queue-table__action">
+                                    <button class="btn btn--outline btn-print-receipt"
+                                            type="button"
+                                            data-receipt="@p.ReceiptNumber"
+                                            data-date="@p.PaymentDate.ToString("dd MMM yyyy")"
+                                            data-name="@p.Name"
+                                            data-member-no="@p.MembershipNumber"
+                                            data-year="@p.MembershipYear"
+                                            data-amount="@p.Amount.ToString("C", currency)"
+                                            data-method="@p.PaymentMethod"
+                                            data-remarks="@p.Remarks">
+                                        Print Receipt
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        }
+    </div>
+</section>
+
+<!-- ============================================================
+     5. CONFIGURATION & SCRIPTS
+     ============================================================ -->
+<script>
+    window.CTClubPayments = {
+        processUrl: "@Url.Action("ProcessPayment", "Review")",
+        generateRenewalsUrl: "@Url.Action("GenerateRenewals", "Review")",
+        expiryCheckUrl: "@Url.Action("RunExpiryCheck", "Review")",
+
+        // Base URL for the year filter
+        dashboardBaseUrl: "@Url.Action("PaymentDashboard", "Review")",
+        currentTab: "@Model.CurrentTab"
+    };
+</script>
+
+@section scripts {
+    @Scripts.Render("~/bundles/app-base")
+    <script src="@Url.Content("~/Scripts/app/payments.js")"></script>
+}

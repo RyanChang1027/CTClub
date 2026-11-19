@@ -1,0 +1,272 @@
+﻿@model CrownTowersClub.ViewModels.DirectoryViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "All Applications";
+
+    // Reusable currency formatter
+    var currency = System.Globalization.CultureInfo.CreateSpecificCulture("ms-MY");
+}
+
+<!-- ============================================================
+     1. HERO SECTION
+     ============================================================ -->
+<section class="hero">
+    <h1 class="display-lg">All Applications</h1>
+    <p class="body-lg">View and search all membership applications (@Model.TotalRecords total).</p>
+</section>
+
+<section class="card">
+
+    <!-- ========================================================
+         2. FILTER BAR (Search & Year)
+         ======================================================== -->
+    <div class="flex items-end" style="gap: 16px; margin-bottom: 24px; flex-wrap: wrap;">
+
+        <!-- Search Input -->
+        <div style="flex: 1; min-width: 200px;">
+            <label class="form-label label-sm">Search</label>
+            <input type="text" id="dir-search" class="form-input" placeholder="Name or NRIC..." value="@Model.SearchTerm" style="min-height: 40px; padding: 8px 12px;" />
+        </div>
+
+        <!-- Year Filter -->
+        <div style="width: 140px;">
+            <label class="form-label label-sm">Term Year</label>
+            <select id="dir-year" class="form-select" style="min-height: 40px; padding: 8px 12px;">
+                @{
+                    int currentYear = DateTime.Now.Year;
+                    for (int y = currentYear - 2; y <= currentYear + 2; y++)
+                    {
+                        <option value="@y" selected="@(Model.SelectedYear == y)">@y</option>
+                    }
+                }
+            </select>
+        </div>
+
+        <button type="button" id="btn-apply-filters" class="btn btn--primary" style="min-height: 40px;">Apply Filters</button>
+
+        @if (!string.IsNullOrWhiteSpace(Model.SearchTerm))
+        {
+            <a href="@Url.Action("Directory", new { tab = Model.CurrentTab, year = Model.SelectedYear })" class="btn btn--outline" style="min-height: 40px;">Clear</a>
+        }
+    </div>
+
+    <!-- ========================================================
+         3. TABS
+         ======================================================== -->
+    <div class="directory-tabs">
+        <a href="@Url.Action("Directory", new { search = Model.SearchTerm, year = Model.SelectedYear, tab = "All", page = 1 })"
+           class="directory-tab @(Model.CurrentTab == "All" ? "is-active" : "")">
+            All <span class="tab-count">@Model.CountAll</span>
+        </a>
+        <a href="@Url.Action("Directory", new { search = Model.SearchTerm, year = Model.SelectedYear, tab = "Pending", page = 1 })"
+           class="directory-tab @(Model.CurrentTab == "Pending" ? "is-active" : "")">
+            In Progress <span class="tab-count">@Model.CountPending</span>
+        </a>
+        <a href="@Url.Action("Directory", new { search = Model.SearchTerm, year = Model.SelectedYear, tab = "Approved", page = 1 })"
+           class="directory-tab @(Model.CurrentTab == "Approved" ? "is-active" : "")">
+            Approved <span class="tab-count">@Model.CountApproved</span>
+        </a>
+        <a href="@Url.Action("Directory", new { search = Model.SearchTerm, year = Model.SelectedYear, tab = "Rejected", page = 1 })"
+           class="directory-tab @(Model.CurrentTab == "Rejected" ? "is-active" : "")">
+            Rejected <span class="tab-count">@Model.CountRejected</span>
+        </a>
+    </div>
+
+    <!-- ========================================================
+         4. DATA TABLE
+         ======================================================== -->
+    @if (Model.Members.Count == 0)
+    {
+        <p class="body-md" style="padding: 24px 0;">No applications found matching your filters.</p>
+    }
+    else
+    {
+        <table class="queue-table queue-table--directory">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Applicant</th>
+                    <th class="hide-mobile">Department</th>
+                    <th class="hide-mobile">Status (@Model.SelectedYear)</th>
+                    <th class="hide-mobile">Membership No.</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var m in Model.Members)
+                {   
+                    var statusText = m.ApplicationStatus;
+                    var statusClass = "status-pill--pending";
+                    var statusStyle = "";
+                
+                    if (m.MembershipStatus == "Cancelled")
+                    {
+                        statusText = "Cancelled";
+                        statusClass = "status-pill--rejected";
+                    }
+                    else if (m.MembershipStatus == "Active" && m.CurrentTermStatus == null)
+                    {
+                        statusText = "Not Billed";
+                        statusClass = "";
+                        statusStyle = "background: #e2e8f0; color: #475569;";
+                    }
+                    else if (m.MembershipStatus == "Active" && m.CurrentTermStatus == "Active")
+                    {
+                        statusText = "Active Member";
+                        statusClass = "status-pill--approved";
+                    }
+                    else if (m.MembershipStatus == "Active" && m.CurrentTermStatus == "Pending Payment")
+                    {
+                        statusText = "Renewal Pending";
+                        statusClass = "status-pill--pending";
+                    }
+                    else if (m.MembershipStatus == "Pending Activation")
+                    {
+                        statusText = "Pending Activation";
+                        statusClass = "status-pill--pending";
+                    }
+                    else if (m.MembershipStatus == "Suspended")
+                    {
+                        statusText = "Suspended";
+                        statusClass = "status-pill--rejected";
+                    }
+                    else
+                    {
+                        statusClass = "status-pill--" +
+                            (m.ApplicationStatus == "Approved" ? "approved" :
+                             m.ApplicationStatus == "Draft" ? "draft" :
+                             m.ApplicationStatus.Contains("Rejected") ? "rejected" : "pending");
+                    }
+                }
+                
+                <tr>
+                    <!-- Date -->
+                    <td>@m.ApplicationDate.ToString("yyyy-MM-dd")</td>
+
+                    <!-- Applicant -->
+                    <td>
+                        <strong>@m.Name</strong><br />
+                        <span class="label-sm" style="color: var(--on-surface-variant);">@m.NRIC</span>
+
+                        <span class="status-pill @statusClass directory-mobile-status" style="@statusStyle">
+                            @statusText
+                        </span>
+                    </td>
+
+                    <!-- Department -->
+                    <td class="hide-mobile">@m.Department</td>
+
+                    <!-- Status Logic -->
+                    <td class="hide-mobile">
+                        <span class="status-pill @statusClass" style="@statusStyle">
+                            @statusText
+                        </span>
+                    </td>
+
+                    <!-- Membership No -->
+                    <td class="hide-mobile">@(m.MembershipNumber ?? "-")</td>
+
+                    <!-- Row Actions -->
+                    <td class="queue-table__action">
+                        <div class="row-actions">
+                            <button type="button" class="btn btn--outline btn-icon-only" data-action-toggle>
+                                <span class="material-symbols-outlined">more_vert</span>
+                            </button>
+
+                            <div class="row-actions-menu">
+                                <a href="@Url.Action("Detail", "Review", new { id = m.MemberId })" class="dropdown-item">View Details</a>
+
+                                @if (m.MembershipStatus == "Pending Activation" || (m.MembershipStatus == "Active" && m.CurrentTermStatus == "Pending Payment"))
+                                {
+                                    <a href="@Url.Action("PaymentDashboard", "Review", new { year = Model.SelectedYear })" class="dropdown-item">Record Payment</a>
+                                }
+
+                                @if (Model.LatestPayments != null && Model.LatestPayments.ContainsKey(m.MemberId))
+                                {
+                                    var payment = Model.LatestPayments[m.MemberId];
+                                    <a href="#" class="dropdown-item btn-print-receipt"
+                                       data-receipt="@payment.ReceiptNumber"
+                                       data-date="@payment.PaymentDate.ToString("dd MMM yyyy")"
+                                       data-name="@m.Name"
+                                       data-member-no="@m.MembershipNumber"
+                                       data-year="@payment.MembershipYear"
+                                       data-amount="@payment.Amount.ToString("C", currency)"
+                                       data-method="@payment.PaymentMethod"
+                                       data-remarks="@payment.Remarks">
+                                        Print Receipt
+                                    </a>
+                                }
+
+                                <!-- FIX: Do not allow editing if Cancelled -->
+                                @if (m.MembershipStatus != "Cancelled" && (m.MembershipStatus == "Active" || m.ApplicationStatus == "Approved"))
+                                {
+                                    <a href="@Url.Action("Edit", "Member", new { id = m.MemberId })" class="dropdown-item">Edit Details</a>
+                                }
+
+                                @if (m.ApplicationStatus == CrownTowersClub.Domain.ApplicationStatus.Draft || m.ApplicationStatus.Contains("Rejected"))
+                                {
+                                    <button type="button" class="dropdown-item btn-delete-record"
+                                            style="color: var(--danger); width: 100%; text-align: left; background: none; border: none; cursor: pointer;"
+                                            data-id="@m.MemberId"
+                                            data-name="@m.Name">
+                                        Delete Record
+                                    </button>
+                                }
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- ========================================================
+             5. PAGINATION FOOTER
+             ======================================================== -->
+        <div class="flex justify-between items-center" style="margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--outline-variant);">
+            <span class="label-sm" style="color: var(--on-surface-variant);">
+                Showing @((Model.CurrentPage - 1) * 15 + 1) - @Math.Min(Model.CurrentPage * 15, Model.TotalRecords) of @Model.TotalRecords
+            </span>
+
+            <div class="flex gap-2">
+                @if (Model.CurrentPage > 1)
+                {
+                    <a href="@Url.Action("Directory", new { search = Model.SearchTerm, tab = Model.CurrentTab, year = Model.SelectedYear, page = Model.CurrentPage - 1 })" class="btn btn--outline" style="padding: 6px 12px; min-height: 32px; font-size: 12px;">Previous</a>
+                }
+                @if (Model.CurrentPage < Model.TotalPages)
+                {
+                    <a href="@Url.Action("Directory", new { search = Model.SearchTerm, tab = Model.CurrentTab, year = Model.SelectedYear, page = Model.CurrentPage + 1 })" class="btn btn--outline" style="padding: 6px 12px; min-height: 32px; font-size: 12px;">Next</a>
+                }
+            </div>
+        </div>
+    }
+</section>
+
+<!-- ============================================================
+     6. CONFIGURATION & SCRIPTS
+     ============================================================ -->
+<script>
+    window.CTClubDirectory = {
+        baseUrl: "@Url.Action("Directory", "Review")",
+        currentTab: "@Model.CurrentTab",
+        currentSearch: "@Model.SearchTerm"
+    };
+</script>
+
+@section scripts {
+    @Scripts.Render("~/bundles/app-base")
+    <script>
+        // Handle the Filter Button (Replaces the <form>)
+        document.getElementById("btn-apply-filters").addEventListener("click", function() {
+            var search = document.getElementById("dir-search").value;
+            var year = document.getElementById("dir-year").value;
+
+            // Build the URL: /Review/Directory?tab=All&search=John&year=2027
+            var url = window.CTClubDirectory.baseUrl
+                + "?tab=" + window.CTClubDirectory.currentTab
+                + "&search=" + encodeURIComponent(search)
+                + "&year=" + year;
+
+            window.location.href = url;
+        });
+    </script>
+}

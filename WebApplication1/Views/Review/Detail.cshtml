@@ -41,7 +41,7 @@
 
 <div class="detail-stack">
     <!-- Personal Details -->
-    <section class="card card--theme-blue" ">
+    <section class="card card--theme-blue">
 
         <!-- Changed h2 to a flex container -->
         <h2 class="headline-md section-title flex justify-between items-center">
@@ -129,36 +129,38 @@
     @if (Model.Terms != null && Model.Terms.Count > 0)
     {
         <section class="card card--accent-gold">
-            <h2 class="headline-md section-title">Term History</h2>
-            <table class="queue-table">
-                <thead>
-                    <tr>
-                        <th>Year</th>
-                        <th>Start Date</th>
-                        <th>End Date</th>
-                        <th>Due Date</th>
-                        <th>Fee</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var term in Model.Terms)
-                {
+            <h2 class="headline-md section-title flex items-center flex-wrap" style="gap: 10px;">
+                <span>Term History</span>
+
+                <span class="status-pill status-pill--@(Model.Terms[0].TermStatus == "Pending Payment" ? "pending" : Model.Terms[0].TermStatus == "Active" ? "approved" : "rejected")">
+                    @Model.Terms[0].TermStatus
+                </span>
+            </h2>
+            <div class="table-scroll">
+                <table class="queue-table">
+                    <thead>
                         <tr>
-                            <td><strong>@term.MembershipYear</strong></td>
-                            <td>@term.StartDate.ToString("yyyy-MM-dd")</td>
-                            <td>@term.EndDate.ToString("yyyy-MM-dd")</td>
-                            <td>@term.DueDate.ToString("yyyy-MM-dd")</td>
-                            <td>@term.FeeAmount.ToString("C", System.Globalization.CultureInfo.CreateSpecificCulture("ms-MY"))</td>
-                            <td>
-                                <span class="status-pill status-pill--@(term.TermStatus == "Pending Payment" ? "pending" : term.TermStatus == "Active" ? "approved" : "rejected")">
-                                    @term.TermStatus
-                                </span>
-                            </td>
+                            <th>Year</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
+                            <th>Due Date</th>
+                            <th>Fee</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @foreach (var term in Model.Terms)
+                    {
+                            <tr>
+                                <td><strong>@term.MembershipYear</strong></td>
+                                <td>@term.StartDate.ToString("yyyy-MM-dd")</td>
+                                <td>@term.EndDate.ToString("yyyy-MM-dd")</td>
+                                <td>@term.DueDate.ToString("yyyy-MM-dd")</td>
+                                <td>@term.FeeAmount.ToString("C", System.Globalization.CultureInfo.CreateSpecificCulture("ms-MY"))</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
         </section>
     }
 
@@ -167,44 +169,46 @@
     {
         <section class="card card--accent-gold">
             <h2 class="headline-md section-title">Receipts</h2>
-            <table class="queue-table">
-                <thead>
-                    <tr>
-                        <th>Receipt No.</th>
-                        <th>Date</th>
-                        <th>Year</th>
-                        <th>Amount</th>
-                        <th>Method</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var p in Model.Payments)
-                {
+            <div class="table-scroll">
+                <table class="queue-table">
+                    <thead>
                         <tr>
-                            <td><strong>@p.ReceiptNumber</strong></td>
-                            <td>@p.PaymentDate.ToString("yyyy-MM-dd")</td>
-                            <td>@p.MembershipYear</td>
-                            <td>@p.Amount.ToString("C", System.Globalization.CultureInfo.CreateSpecificCulture("ms-MY"))</td>
-                            <td>@p.PaymentMethod</td>
-                            <td class="queue-table__action">
-                                <button class="btn btn--outline btn-print-receipt"
-                                        type="button"
-                                        data-receipt="@p.ReceiptNumber"
-                                        data-date="@p.PaymentDate.ToString("dd MMM yyyy")"
-                                        data-name="@member.Name"
-                                        data-member-no="@member.MembershipNumber"
-                                        data-year="@p.MembershipYear"
-                                        data-amount="@p.Amount.ToString("C", System.Globalization.CultureInfo.CreateSpecificCulture("ms-MY"))"
-                                        data-method="@p.PaymentMethod"
-                                        data-remarks="@p.Remarks">
-                                    Print Receipt
-                                </button>
-                            </td>
+                            <th>Receipt No.</th>
+                            <th>Date</th>
+                            <th>Year</th>
+                            <th>Amount</th>
+                            <th>Method</th>
+                            <th>Action</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @foreach (var p in Model.Payments)
+                    {
+                            <tr>
+                                <td><strong>@p.ReceiptNumber</strong></td>
+                                <td>@p.PaymentDate.ToString("yyyy-MM-dd")</td>
+                                <td>@p.MembershipYear</td>
+                                <td>@p.Amount.ToString("C", System.Globalization.CultureInfo.CreateSpecificCulture("ms-MY"))</td>
+                                <td>@p.PaymentMethod</td>
+                                <td class="queue-table__action">
+                                    <button class="btn btn--primary btn-print-receipt"
+                                            type="button"
+                                            data-receipt="@p.ReceiptNumber"
+                                            data-date="@p.PaymentDate.ToString("dd MMM yyyy")"
+                                            data-name="@member.Name"
+                                            data-member-no="@member.MembershipNumber"
+                                            data-year="@p.MembershipYear"
+                                            data-amount="@p.Amount.ToString("C", System.Globalization.CultureInfo.CreateSpecificCulture("ms-MY"))"
+                                            data-method="@p.PaymentMethod"
+                                            data-remarks="@p.Remarks">
+                                        Print Receipt
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
         </section>
     }
 

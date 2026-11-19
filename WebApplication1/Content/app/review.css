@@ -46,6 +46,24 @@
     vertical-align: middle;
 }
 
+.table-scroll {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.table-scroll .queue-table {
+    min-width: 680px;
+}
+
+
+/* Payment Dashboard Stats */
+
+.dashboard-grid.payment-stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
 .detail-grid {
     display: grid;
     grid-template-columns: minmax(160px, 220px) 1fr;
@@ -281,16 +299,74 @@
 /* ============================================================
    Mobile Responsive
    ============================================================ */
+
 @media (max-width: 767px) {
     .step-name {
         font-size: 10px;
     }
+
     .step-counter {
         width: 24px;
         height: 24px;
         font-size: 12px;
     }
+
     .stepper-wrapper::before {
         top: 11px;
+    }
+
+
+
+
+    .card.applications-list-card {
+        padding: 0;
+        background: transparent;
+        border: 0;
+        box-shadow: none;
+    }
+
+    .detail-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 2px 0;
+    }
+
+    .detail-grid dt {
+        color: var(--primary);
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.045em;
+        text-transform: uppercase;
+    }
+
+    .detail-grid dd {
+        min-width: 0;
+        overflow-wrap: anywhere;
+        margin: 0 0 12px;
+        font-size: 14px;
+        line-height: 1.5;
+    }
+
+
+    /* Payment Dashboard */
+
+    .dashboard-grid.payment-stats {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .renewal-controls {
+        width: 100%;
+    }
+
+    .renewal-actions {
+        display: flex;
+        flex: 1 0 100%;
+        flex-direction: column;
+        width: 100%;
+        gap: 12px;
+    }
+
+    .renewal-actions .btn {
+        width: 100%;
+        border-radius: 9px;
     }
 }
