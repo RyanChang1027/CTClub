@@ -316,25 +316,6 @@ App.Review.page = (function (window, document, $, baseApi, notifications) {
         return "The request could not be completed.";
     }
 
-        window.Swal.fire({
-            title: "Cancel Membership?",
-            text: "This action is permanent. It will expire their current terms and remove their active status.",
-            icon: "warning",
-            input: "textarea",
-            inputPlaceholder: "Reason for cancellation (required)...",
-            inputValidator: function (value) {
-                return (!value || !value.trim()) ? "A reason is required." : null;
-            },
-            showCancelButton: true,
-            confirmButtonColor: "#b42318",
-            confirmButtonText: "Yes, cancel membership"
-        }).then(function (result) {
-            if (result.isConfirmed && result.value) {
-                post("/Review/CancelMembership", { id: memberId, reason: result.value.trim() }, document.getElementById("btn-cancel-membership"), "Cancelling...", "Membership cancelled.", "/Review/Directory");
-            }
-        });
-    }
-
     // Initialize
     $(init);
 
