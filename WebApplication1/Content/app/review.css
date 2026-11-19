@@ -209,6 +209,14 @@
    Directory Status Display
    ========================================== */
 
+/* Desktop applicant details */
+.directory-applicant-main {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+}
+
 /* Mobile status is hidden on desktop */
 .directory-mobile-status {
     display: none;
