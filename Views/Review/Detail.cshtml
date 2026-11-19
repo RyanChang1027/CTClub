@@ -1,0 +1,311 @@
+﻿@model CrownTowersClub.ViewModels.MemberDetailViewModel
+
+@*@Html.AntiForgeryToken()*@
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Application Detail";
+
+    // Alias for easier reading in the HTML
+    var member = Model.Member;
+
+    var canDeptHead = (bool)(ViewBag.CanDeptHeadAct ?? false);
+    var canCommittee = (bool)(ViewBag.CanCommitteeAct ?? false);
+}
+
+<input type="hidden" id="review-member-id" value="@member.MemberId" />
+
+<section class="hero">
+    <div class="flex items-center gap-4" style="margin-bottom: 8px; flex-wrap: wrap;">
+        <h1 class="display-lg" style="margin: 0;">@member.Name</h1>
+
+        @{
+            var statusClass =
+                member.ApplicationStatus == CrownTowersClub.Domain.ApplicationStatus.Approved ? "approved"
+                : member.ApplicationStatus == CrownTowersClub.Domain.ApplicationStatus.PendingForVerification ? "pending"
+                : member.ApplicationStatus == CrownTowersClub.Domain.ApplicationStatus.VerifiedByDeptHead ? "verified"
+                : member.ApplicationStatus == CrownTowersClub.Domain.ApplicationStatus.ReturnedForCorrection ? "returned"
+                : member.ApplicationStatus == CrownTowersClub.Domain.ApplicationStatus.Draft ? "draft"
+                : "rejected";
+        }
+
+        <span class="status-pill status-pill--@statusClass" style="margin-top: 8px;">
+            @member.ApplicationStatus
+        </span>
+    </div>
+
+    <p class="body-lg">
+        Application Date: @member.ApplicationDate.ToString("dd MMM yyyy")
+    </p>
+</section>
+
+<div class="detail-stack">
+    <!-- Personal Details -->
+    <section class="card card--theme-blue" ">
+
+        <!-- Changed h2 to a flex container -->
+        <h2 class="headline-md section-title flex justify-between items-center">
+            <span>Personal Details</span>
+
+            <!-- The Back Button -->
+            <button type="button" onclick="history.back();" class="btn btn--outline" style="padding: 6px 12px; min-height: 32px; font-size: 12px;">
+                <span class="material-symbols-outlined" style="font-size: 16px; margin-right: 4px;">arrow_back</span>
+                Back
+            </button>
+        </h2>
+
+        <dl class="detail-grid">
+            <dt>NRIC</dt>
+            <dd>@member.NRIC</dd>
+            <dt>Gender</dt>
+            <dd>@member.Gender</dd>
+            <dt>Race</dt>
+            <dd>@member.Race</dd>
+            <dt>Marital Status</dt>
+            <dd>@member.MaritalStatus</dd>
+            <dt>Nationality</dt>
+            <dd>@member.Nationality</dd>
+            <dt>Date of Birth</dt>
+            <dd>@(member.DateOfBirth.HasValue ? member.DateOfBirth.Value.ToString("yyyy-MM-dd") : "")</dd>
+            <dt>Place of Birth</dt>
+            <dd>@member.PlaceOfBirth</dd>
+        </dl>
+    </section>
+
+    <!-- Professional Details -->
+    <section class="card card--theme-green">
+        <h2 class="headline-md section-title">Professional Details</h2>
+        <dl class="detail-grid">
+            <dt>Company</dt>
+            <dd>@member.CompanyName</dd>
+            <dt>Company Address</dt>
+            <dd>@member.CompanyAddress</dd>
+            <dt>Department</dt>
+            <dd>@member.Department</dd>
+            <dt>Occupation</dt>
+            <dd>@member.Occupation</dd>
+            <dt>Head of Department</dt>
+            <dd>@member.HeadOfDepartment</dd>
+            <dt>Floor</dt>
+            <dd>@member.Floor</dd>
+        </dl>
+    </section>
+
+    <!-- Contact & Interests -->
+    <section class="card card--theme-gold">
+        <h2 class="headline-md section-title">Contact &amp; Interests</h2>
+        <dl class="detail-grid">
+            <dt>Telephone</dt>
+            <dd>@member.Tel</dd>
+            <dt>Email</dt>
+            <dd>@member.Email</dd>
+            <dt>Home Address</dt>
+            <dd>@member.HomeAddress</dd>
+            <dt>Hobbies</dt>
+            <dd>@member.Hobbies</dd>
+        </dl>
+    </section>
+
+    <!-- NEW: Membership Details -->
+    @if (!string.IsNullOrEmpty(member.MembershipNumber))
+    {
+        <section class="card card--accent-gold">
+            <h2 class="headline-md section-title">Membership Details</h2>
+            <dl class="detail-grid">
+                <dt>Membership No.</dt>
+                <dd><strong>@member.MembershipNumber</strong></dd>
+
+                <dt>Membership Status</dt>
+                <dd>
+                    <span class="status-pill status-pill--@(member.MembershipStatus == "Pending Activation" ? "pending" : member.MembershipStatus == "Active" ? "approved" : "rejected")">
+                        @member.MembershipStatus
+                    </span>
+                </dd>
+            </dl>
+        </section>
+    }
+
+    <!-- NEW: Membership Term History -->
+    @if (Model.Terms != null && Model.Terms.Count > 0)
+    {
+        <section class="card card--accent-gold">
+            <h2 class="headline-md section-title">Term History</h2>
+            <table class="queue-table">
+                <thead>
+                    <tr>
+                        <th>Year</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Due Date</th>
+                        <th>Fee</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var term in Model.Terms)
+                {
+                        <tr>
+                            <td><strong>@term.MembershipYear</strong></td>
+                            <td>@term.StartDate.ToString("yyyy-MM-dd")</td>
+                            <td>@term.EndDate.ToString("yyyy-MM-dd")</td>
+                            <td>@term.DueDate.ToString("yyyy-MM-dd")</td>
+                            <td>@term.FeeAmount.ToString("C", System.Globalization.CultureInfo.CreateSpecificCulture("ms-MY"))</td>
+                            <td>
+                                <span class="status-pill status-pill--@(term.TermStatus == "Pending Payment" ? "pending" : term.TermStatus == "Active" ? "approved" : "rejected")">
+                                    @term.TermStatus
+                                </span>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </section>
+    }
+
+    <!-- Add this below the Term History section -->
+    @if (Model.Payments != null && Model.Payments.Count > 0)
+    {
+        <section class="card card--accent-gold">
+            <h2 class="headline-md section-title">Receipts</h2>
+            <table class="queue-table">
+                <thead>
+                    <tr>
+                        <th>Receipt No.</th>
+                        <th>Date</th>
+                        <th>Year</th>
+                        <th>Amount</th>
+                        <th>Method</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var p in Model.Payments)
+                {
+                        <tr>
+                            <td><strong>@p.ReceiptNumber</strong></td>
+                            <td>@p.PaymentDate.ToString("yyyy-MM-dd")</td>
+                            <td>@p.MembershipYear</td>
+                            <td>@p.Amount.ToString("C", System.Globalization.CultureInfo.CreateSpecificCulture("ms-MY"))</td>
+                            <td>@p.PaymentMethod</td>
+                            <td class="queue-table__action">
+                                <button class="btn btn--outline btn-print-receipt"
+                                        type="button"
+                                        data-receipt="@p.ReceiptNumber"
+                                        data-date="@p.PaymentDate.ToString("dd MMM yyyy")"
+                                        data-name="@member.Name"
+                                        data-member-no="@member.MembershipNumber"
+                                        data-year="@p.MembershipYear"
+                                        data-amount="@p.Amount.ToString("C", System.Globalization.CultureInfo.CreateSpecificCulture("ms-MY"))"
+                                        data-method="@p.PaymentMethod"
+                                        data-remarks="@p.Remarks">
+                                    Print Receipt
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </section>
+    }
+
+    <!-- Correction / Rejection Cards -->
+    @if (!string.IsNullOrWhiteSpace(member.CorrectionReason))
+    {
+        <section class="card card--info-banner">
+            <h2 class="headline-md section-title">Returned for Correction</h2>
+            <p class="body-md">@member.CorrectionReason</p>
+        </section>
+    }
+
+    @if (!string.IsNullOrWhiteSpace(member.RejectionReason))
+    {
+        <section class="card card--theme-red">
+            <h2 class="headline-md section-title">Rejection</h2>
+            <dl class="detail-grid">
+                <dt>Reason</dt>
+                <dd>@member.RejectionReason</dd>
+                <dt>Rejected By</dt>
+                <dd>@member.RejectedBy</dd>
+                <dt>Rejected At</dt>
+                <dd>@(member.RejectedAt.HasValue ? member.RejectedAt.Value.ToString("yyyy-MM-dd HH:mm") : "")</dd>
+            </dl>
+        </section>
+    }
+
+    <!-- Cancellation Card -->
+    @if (!string.IsNullOrWhiteSpace(member.CancellationReason))
+    {
+        <section class="card" style="border-left: 4px solid var(--danger);">
+            <h2 class="headline-md section-title" style="color: var(--danger);">Membership Cancelled</h2>
+            <dl class="detail-grid">
+                <dt>Reason</dt>
+                <dd>@member.CancellationReason</dd>
+            </dl>
+        </section>
+    }
+
+    <!-- Decision Buttons -->
+    @if (canDeptHead)
+    {
+        <section class="card" style="border-top: 4px solid var(--primary);">
+            <h2 class="headline-md section-title">Decision</h2>
+            <div class="actions">
+                <button id="returnApplicationDeptHead" class="btn btn--warning" type="button">Return for Correction</button>
+                <button id="rejectApplicationDeptHead" class="btn btn--outline" type="button">Reject</button>
+                <button id="verifyApplication" class="btn btn--primary" type="button">Verify</button>
+            </div>
+        </section>
+    }
+
+    @if (canCommittee)
+    {
+    <!-- Only show Approve/Reject if the application is still in 'Verified' status -->
+        if (member.ApplicationStatus == CrownTowersClub.Domain.ApplicationStatus.VerifiedByDeptHead)
+        {
+            <section class="card">
+                <h2 class="headline-md section-title">Decision</h2>
+                <div class="actions">
+                    <button id="approveApplication" class="btn btn--primary" type="button">Approve</button>
+                    <button id="rejectApplicationCommittee" class="btn btn--outline" type="button">Reject</button>
+                </div>
+            </section>
+        }
+
+    <!-- Show Cancel Membership if the member is Active or Suspended -->
+        if (member.MembershipStatus == "Active" || member.MembershipStatus == "Suspended")
+        {
+            <section class="card" style="border-left: 4px solid var(--danger); margin-top: 24px;">
+                <div class="flex justify-between items-center flex-wrap" style="gap: 16px;">
+                    <div>
+                        <h2 class="headline-md" style="color: var(--danger); margin-bottom: 4px;">Danger Zone</h2>
+                        <p class="body-md" style="color: var(--on-surface-variant);">
+                            Cancelling a membership is permanent. It will expire their current terms and remove their active status.
+                        </p>
+                    </div>
+                    <button type="button" id="btn-cancel-membership" class="btn btn--outline" style="border-color: var(--danger); color: var(--danger);">
+                        Cancel Membership
+                    </button>
+                </div>
+            </section>
+        }
+    }
+</div>
+
+<script>
+    window.CTClubReview = {
+        verifyUrl: "@Url.Action("Verify", "Review")",
+        rejectDeptHeadUrl: "@Url.Action("RejectByDeptHead", "Review")",
+        returnDeptHeadUrl: "@Url.Action("ReturnByDeptHead", "Review")",
+        approveUrl: "@Url.Action("Approve", "Review")",
+        rejectCommitteeUrl: "@Url.Action("RejectByCommittee", "Review")",
+        pendingUrl: "@Url.Action("Pending", "Review")",
+        verifiedUrl: "@Url.Action("Verified", "Review")",
+        logoUrl: "@Url.Content("~/Content/app/images/krctk-logo.png")"
+    };
+</script>
+
+@section scripts {
+    @Scripts.Render(
+        "~/bundles/app-base",
+        "~/bundles/app-review")
+}

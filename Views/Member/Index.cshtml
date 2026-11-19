@@ -1,0 +1,369 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Membership Application";
+
+    // Session context
+    var user = Session[CrownTowersClub.Infrastructure.Session.DevSessionKeys.User]
+       as CrownTowersClub.Infrastructure.Session.DevSessionUser;
+
+    // Manual entry mode (Committee entering for someone else)
+    var isManualEntry = (bool)(ViewBag.IsManualEntry ?? false);
+
+    var isEditMode = (bool)(ViewBag.IsEditMode ?? false);
+
+    // Determine where to redirect after Save/Submit
+    // Manual entry goes back to the Verified queue; everyone else goes to My Applications
+    var redirectUrl = isManualEntry
+? Url.Action("Verified", "Review")
+: Url.Action("Mine", "Member");
+}
+
+<!-- ============================================================
+     CONFIGURATION (Data passed to JavaScript)
+     ============================================================ -->
+<div id="api-config"
+     data-url-save-draft="@Url.Action("SaveDraft", "Member")"
+     data-url-submit="@Url.Action("Submit", "Member")"
+     data-url-staff-details="@Url.Action("GetStaffDetails", "Member")">
+</div>
+
+<div id="membership-page-config"
+     data-initial-nric="@ViewBag.InitialNric"
+     data-initial-member="@ViewBag.InitialMemberJson"
+     data-url-my-applications="@redirectUrl"
+     data-is-edit-mode="@ViewBag.IsEditMode">
+</div>
+
+<!-- ============================================================
+     APP SHELL (Injected by JavaScript)
+     ============================================================ -->
+<div id="app"></div>
+
+<!-- ============================================================
+     HTML TEMPLATE (Rendered by JavaScript)
+     ============================================================ -->
+<script type="text/x-template" id="membership-template">
+
+    <!-- 1. Hero Section -->
+    <section class="hero">
+        <h1 class="display-lg" style="margin-bottom: 8px;">
+            Membership Application
+        </h1>
+        <p class="body-lg" style="color: var(--on-surface-variant); max-width: 600px;">
+            Join the exclusive Crown Towers Club. Please complete the form below with accurate information to proceed with your application.
+        </p>
+    </section>
+
+    <!-- 2. Manual Entry Banner (Committee Only) -->
+    @if (isManualEntry)
+    {
+        <div class="card card--info-banner" style="margin-bottom: 24px;">
+            <h2 class="headline-md section-title">Manual Entry Mode</h2>
+            <p class="body-md">You are entering an application on behalf of a staff member. Please fill in all fields manually.</p>
+        </div>
+    }
+
+    @if (isEditMode)
+    {
+        <div class="card card--info-banner" style="margin-bottom: 24px;">
+            <h2 class="headline-md section-title">Update Mode</h2>
+            <p class="body-md">You are updating member details.</p>
+        </div>
+    }
+
+    <!-- 3. Main Content Grid -->
+    <div class="content-grid">
+
+        <!-- ========================================================
+             FORM COLUMN
+             ======================================================== -->
+        <form id="membership-form" class="form-col stack" novalidate>
+            <input type="hidden" name="IsEditMode" value="@(ViewBag.IsEditMode == true ? "true" : "false")" />
+            <input type="hidden" name="MemberId" value="0" />
+
+            <!-- CARD: Personal Details -->
+            <section class="card">
+                <h2 class="headline-md section-title">Personal Details</h2>
+
+                <div class="form-grid">
+                    <!-- Name -->
+                    <div class="field--full">
+                        <label class="form-label label-md" for="name">Name of Applicant</label>
+                        <input id="name" name="Name" class="form-input" type="text" maxlength="150" placeholder="Full Name" required />
+                    </div>
+
+                    <!-- NRIC (With Retrieve Button) -->
+                    <div class="field--full nric-field">
+                        <label class="form-label label-md" for="nric">NRIC No</label>
+                        <div class="nric-input-row">
+                            <input id="nric" name="NRIC" class="form-input" type="text" maxlength="20" placeholder="e.g. 900101-13-9562" required />
+
+                            @if (!isManualEntry)
+                            {
+                                <button id="retrieveStaffDetails" class="btn btn--secondary" type="button">
+                                    Retrieve Staff Details
+                                </button>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Gender (Dropdown) -->
+                    <div>
+                        <label class="form-label label-md" for="gender">Gender</label>
+                        <select id="gender" name="Gender" class="form-select">
+                            <option value="">Select Gender</option>
+                        </select>
+                    </div>
+
+                    <!-- Race (Dropdown) -->
+                    <div>
+                        <label class="form-label label-md" for="race">Race</label>
+                        <select id="race" name="Race" class="form-select">
+                            <option value="">Select Race</option>
+                        </select>
+                    </div>
+
+                    <!-- Marital Status (Dropdown) -->
+                    <div>
+                        <label class="form-label label-md" for="marital-status">Marital Status</label>
+                        <select id="marital-status" name="MaritalStatus" class="form-select">
+                            <option value="">Select Status</option>
+                        </select>
+                    </div>
+
+                    <!-- Nationality (Dropdown) -->
+                    <div>
+                        <label class="form-label label-md" for="nationality">Nationality</label>
+                        <select id="nationality" name="Nationality" class="form-select">
+                            <option value="">Select Nationality</option>
+                        </select>
+                    </div>
+
+                    <!-- Date of Birth -->
+                    <div>
+                        <label class="form-label label-md" for="date-of-birth">Date of Birth</label>
+                        <input id="date-of-birth" name="DateOfBirth" class="form-input" type="date" />
+                    </div>
+
+                    <!-- Place of Birth -->
+                    <div>
+                        <label class="form-label label-md" for="place-of-birth">Place of Birth</label>
+                        <input id="place-of-birth" name="PlaceOfBirth" class="form-input" type="text" maxlength="150" />
+                    </div>
+                </div>
+            </section>
+
+            <!-- CARD: Professional Details -->
+            <section class="card">
+                <h2 class="headline-md section-title">Professional Details</h2>
+
+                <div class="form-grid">
+                    <!-- Company Name (Cascading Dropdown) -->
+                    <div class="field--full">
+                        <label class="form-label label-md" for="company-name">Name of Company</label>
+                        <select id="company-name" name="CompanyName" class="form-select">
+                            <option value="">Select Company</option>
+                        </select>
+                    </div>
+
+                    <!-- Company Address (Auto-filled, Readonly) -->
+                    <div class="field--full">
+                        <label class="form-label label-md" for="company-address">Company Address</label>
+                        <textarea id="company-address" name="CompanyAddress" class="form-textarea" readonly></textarea>
+                    </div>
+
+                    <!-- Department (Cascading Dropdown) -->
+                    <div>
+                        <label class="form-label label-md" for="department">Department</label>
+                        <select id="department" name="Department" class="form-select" disabled>
+                            <option value="">Select Company First</option>
+                        </select>
+                    </div>
+
+                    <!-- Occupation -->
+                    <div>
+                        <label class="form-label label-md" for="occupation">Occupation</label>
+                        <input id="occupation" name="Occupation" class="form-input" type="text" maxlength="100" />
+                    </div>
+
+                    <!-- Head of Department (Dropdown) -->
+                    @*<div>
+                        <label class="form-label label-md" for="head-of-department">Head of Department</label>
+                        <select id="head-of-department" name="HeadOfDepartment" class="form-select">
+                            <option value="">Select HOD</option>
+                        </select>
+                    </div>*@
+                    <div>
+                        <label class="form-label label-md"
+                               for="head-of-department">
+                            Head of Department
+                        </label>
+
+                        <input id="head-of-department"
+                               name="HeadOfDepartment"
+                               class="form-input"
+                               type="text"
+                               maxlength="150" />
+                    </div>
+
+                    <!-- Floor -->
+                    <div>
+                        <label class="form-label label-md" for="floor">Floor</label>
+                        <input id="floor" name="Floor" class="form-input" type="text" maxlength="30" />
+                    </div>
+                </div>
+            </section>
+
+            <!-- CARD: Contact & Interests -->
+            <section class="card">
+                <h2 class="headline-md section-title">Contact &amp; Interests</h2>
+
+                <div class="form-grid">
+                    <div>
+                        <label class="form-label label-md" for="tel">Tel. No.</label>
+                        <input id="tel" name="Tel" class="form-input" type="tel" maxlength="30" />
+                    </div>
+
+                    <div>
+                        <label class="form-label label-md" for="email">Email</label>
+                        <input id="email" name="Email" class="form-input" type="email" maxlength="254" />
+                    </div>
+
+                    <div class="field--full">
+                        <label class="form-label label-md" for="home-address">Home Address</label>
+                        <textarea id="home-address" name="HomeAddress" class="form-textarea"></textarea>
+                    </div>
+
+                    <div class="field--full">
+                        <label class="form-label label-md" for="hobbies">Hobbies</label>
+                        <input id="hobbies" name="Hobbies" class="form-input" type="text" maxlength="500" />
+                    </div>
+                </div>
+            </section>
+
+            <!-- CARD: Declaration -->
+            <section class="card">
+                <h2 class="headline-md section-title">Declaration</h2>
+                <div class="stack--sm">
+                    <label class="checkbox-row" for="declaration1">
+                        <input id="declaration1" name="Declaration1" class="checkbox" type="checkbox" value="true" />
+                        <span class="body-md">
+                            I understand that the approval of my application shall be at the sole discretion of the Kuching Crown Towers Recreation Club.
+                        </span>
+                    </label>
+
+                    <label class="checkbox-row" for="declaration2">
+                        <input id="declaration2" name="Declaration2" class="checkbox" type="checkbox" value="true" />
+                        <span class="body-md">
+                            I agree that a sum of RM2.00 per month or per annum per member shall be paid as membership fee.
+                        </span>
+                    </label>
+                </div>
+            </section>
+
+            <!-- Form Actions -->
+            <div class="actions">
+                @if (!isManualEntry)
+                {
+                    <button id="saveDraft" class="btn btn--outline" type="button" data-action="draft">
+                        Save Draft
+                    </button>
+                }
+
+                <button id="clearDraft" class="btn btn--outline" type="button" data-action="clear">
+                    Clear
+                </button>
+
+                <button id="submitApplication" class="btn btn--primary" type="submit">
+                    Submit Application
+                </button>
+            </div>
+
+        </form>
+
+        <!-- ========================================================
+             SIDEBAR COLUMN (Info, QR Codes, Objectives)
+             ======================================================== -->
+        <aside class="sidebar-col stack sticky-sidebar">
+
+            <!-- Community Channels (QR Codes) -->
+            <section class="qr-card">
+                <h2 class="qr-card-head label-md">Community Channels</h2>
+                <div class="qr-grid">
+                    <div class="qr-cell">
+                        <span class="qr-label label-sm">News WhatsApp</span>
+                        <a href="#" title="Join News WhatsApp">
+                            <img src="@Url.Content("~/Content/app/images/news-whatsapp.png")" alt="News WhatsApp QR Code" class="qr-image" />
+                        </a>
+                    </div>
+                    <div class="qr-cell">
+                        <span class="qr-label label-sm">Chit-Chat WhatsApp</span>
+                        <a href="#" title="Join Chit-Chat WhatsApp">
+                            <img src="@Url.Content("~/Content/app/images/chitchat-whatsapp.png")" alt="Chit-Chat WhatsApp QR Code" class="qr-image" />
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Club Objectives -->
+            <section class="card--low">
+                <div class="objectives-head">
+                    <span class="material-symbols-outlined" aria-hidden="true">workspace_premium</span>
+                    <h2 class="headline-md">Club Objectives</h2>
+                </div>
+                <ul class="objective-list body-md">
+                    <li class="objective-item">
+                        <span class="material-symbols-outlined" aria-hidden="true">check_circle</span>
+                        <span>To promote social, recreational and sporting activities among members of the club, their spouse and dependent children;</span>
+                    </li>
+                    <li class="objective-item">
+                        <span class="material-symbols-outlined" aria-hidden="true">check_circle</span>
+                        <span>To foster closer relationship and better understanding among members of the club;</span>
+                    </li>
+                    <li class="objective-item">
+                        <span class="material-symbols-outlined" aria-hidden="true">check_circle</span>
+                        <span>To promote the well-being of members of the club, their spouse and dependent children; and</span>
+                    </li>
+                    <li class="objective-item">
+                        <span class="material-symbols-outlined" aria-hidden="true">check_circle</span>
+                        <span>To raise funds for the attainment of the above objectives but subject to the consent of the Registrar of Societies and the approval of the appropriate government authorities.</span>
+                    </li>
+                </ul>
+            </section>
+
+            <!-- Membership Benefits -->
+            <section class="card--low">
+                <div class="objectives-head">
+                    <span class="material-symbols-outlined" aria-hidden="true">workspace_premium</span>
+                    <h2 class="headline-md">Membership Benefits</h2>
+                </div>
+                <ul class="objective-list body-md">
+                    <li class="objective-item">
+                        <span class="material-symbols-outlined" aria-hidden="true">sports_soccer</span>
+                        <span>To allow the club to participate as a separate group in the annual sports carnival or Inter-Club meet.</span>
+                    </li>
+                    <li class="objective-item">
+                        <span class="material-symbols-outlined" aria-hidden="true">redeem</span>
+                        <div>
+                            <span>The club may subsidise:</span>
+                            <ul class="subsidy-list">
+                                <li>Social outings to places of interest or holiday trips;</li>
+                                <li>Sporting activities at the Executive Club;</li>
+                                <li>Gifts - Christmas, New Year, etc; and</li>
+                                <li>Financial assistance in times of need, etc.</li>
+                            </ul>
+                        </div>
+                    </li>
+                </ul>
+            </section>
+
+        </aside>
+
+    </div>
+</script>
+
+@section scripts {
+    @Scripts.Render(
+        "~/bundles/app-base",
+        "~/bundles/app-member")
+}

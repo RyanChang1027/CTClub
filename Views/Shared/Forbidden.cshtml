@@ -1,0 +1,21 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Access Denied";
+}
+
+<div style="text-align: center; padding: 80px 20px;">
+    <h1 class="display-lg" style="color: var(--danger); margin-bottom: 16px;">
+        Access Denied
+    </h1>
+
+    <p class="body-lg" style="color: var(--on-surface-variant); max-width: 600px; margin: 0 auto 32px;">
+        You do not have permission to view this page or application.
+        If you believe this is a mistake, please contact the Committee.
+    </p>
+
+    <div class="actions" style="justify-content: center;">
+        <a href="@Url.Action("Index", "Home")" class="btn btn--primary">
+            Back to Home
+        </a>
+    </div>
+</div>

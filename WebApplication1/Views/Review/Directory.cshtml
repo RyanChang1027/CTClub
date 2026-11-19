@@ -81,72 +81,73 @@
     }
     else
     {
-        <table class="queue-table">
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Applicant</th>
-                    <th class="hide-mobile">Department</th>
-                    <th>Status (@Model.SelectedYear)</th>
-                    <th class="hide-mobile">Membership No.</th>
-                    <th class="queue-table__action">Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var m in Model.Members)
-                {
+        <div class="table-scroll">
+            <table class="queue-table queue-table--directory-mobile">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Applicant</th>
+                        <th class="hide-mobile">Department</th>
+                        <th>Status (@Model.SelectedYear)</th>
+                        <th class="hide-mobile">Membership No.</th>
+                        <th class="queue-table__action">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var m in Model.Members)
+                    {
                     <tr>
                         <!-- Date -->
-                        <td>@m.ApplicationDate.ToString("yyyy-MM-dd")</td>
+                        <td data-label="Date">@m.ApplicationDate.ToString("yyyy-MM-dd")</td>
 
                         <!-- Applicant -->
-                        <td>
+                        <td data-label="Applicant">
                             <strong>@m.Name</strong><br />
                             <span class="label-sm" style="color: var(--on-surface-variant);">@m.NRIC</span>
                         </td>
 
                         <!-- Department -->
-                        <td class="hide-mobile">@m.Department</td>
+                        <td class="hide-mobile" data-label="Department">@m.Department</td>
 
                         <!-- Status Logic -->
-                        <td>
+                        <td data-label="Status">
                             @if (m.MembershipStatus == "Cancelled")
-                            {
-                                <span class="status-pill status-pill--neutral">Not Billed</span>
-                            }
-                            else if (m.MembershipStatus == "Active" && m.CurrentTermStatus == null)
-                            {
-                                <span class="status-pill" style="background: #e2e8f0; color: #475569;">Not Billed</span>
-                            }
-                            else if (m.MembershipStatus == "Active" && m.CurrentTermStatus == "Active")
-                            {
-                                <span class="status-pill status-pill--approved">Active Member</span>
-                            }
-                            else if (m.MembershipStatus == "Active" && m.CurrentTermStatus == "Pending Payment")
-                            {
-                                <span class="status-pill status-pill--pending">Renewal Pending</span>
-                            }
-                            else if (m.MembershipStatus == "Pending Activation")
-                            {
-                                <span class="status-pill status-pill--pending">Pending Activation</span>
-                            }
-                            else if (m.MembershipStatus == "Suspended")
-                            {
-                                <span class="status-pill status-pill--rejected">Suspended</span>
-                            }
-                            else
-                            {
-                                <span class="status-pill status-pill--@(m.ApplicationStatus == "Approved" ? "approved" : m.ApplicationStatus == "Draft" ? "draft" : m.ApplicationStatus.Contains("Rejected") ? "rejected" : "pending")">
-                                    @m.ApplicationStatus
-                                </span>
-                            }
+                                        {
+                            <span class="status-pill status-pill--neutral">Not Billed</span>
+                                        }
+                                        else if (m.MembershipStatus == "Active" && m.CurrentTermStatus == null)
+                                        {
+                            <span class="status-pill" style="background: #e2e8f0; color: #475569;">Not Billed</span>
+                                        }
+                                        else if (m.MembershipStatus == "Active" && m.CurrentTermStatus == "Active")
+                                        {
+                            <span class="status-pill status-pill--approved">Active Member</span>
+                                        }
+                                        else if (m.MembershipStatus == "Active" && m.CurrentTermStatus == "Pending Payment")
+                                        {
+                            <span class="status-pill status-pill--pending">Renewal Pending</span>
+                                        }
+                                        else if (m.MembershipStatus == "Pending Activation")
+                                        {
+                            <span class="status-pill status-pill--pending">Pending Activation</span>
+                                        }
+                                        else if (m.MembershipStatus == "Suspended")
+                                        {
+                            <span class="status-pill status-pill--rejected">Suspended</span>
+                                        }
+                                        else
+                                        {
+                            <span class="status-pill status-pill--@(m.ApplicationStatus == "Approved" ? "approved" : m.ApplicationStatus == "Draft" ? "draft" : m.ApplicationStatus.Contains("Rejected") ? "rejected" : "pending")">
+                                @m.ApplicationStatus
+                            </span>
+                                        }
                         </td>
 
                         <!-- Membership No -->
-                        <td class="hide-mobile">@(m.MembershipNumber ?? "-")</td>
+                        <td class="hide-mobile" data-label="Membership No.">@(m.MembershipNumber ?? "-")</td>
 
                         <!-- Row Actions -->
-                        <td class="queue-table__action">
+                        <td class="queue-table__action" data-label="Action">
                             <div class="row-actions">
                                 <button type="button" class="btn btn--primary btn-icon-only" data-action-toggle>
                                     <span class="material-symbols-outlined">more_vert</span>
@@ -156,52 +157,53 @@
                                     <a href="@Url.Action("Detail", "Review", new { id = m.MemberId })" class="dropdown-item">View Details</a>
 
                                     @if (m.MembershipStatus == "Pending Activation" || (m.MembershipStatus == "Active" && m.CurrentTermStatus == "Pending Payment"))
-                                    {
-                                        <a href="@Url.Action("PaymentDashboard", "Review", new { year = Model.SelectedYear })" class="dropdown-item">Record Payment</a>
-                                    }
+                                        {
+                                    <a href="@Url.Action("PaymentDashboard", "Review", new { year = Model.SelectedYear })" class="dropdown-item">Record Payment</a>
+                                        }
 
                                     @if (Model.LatestPayments != null && Model.LatestPayments.ContainsKey(m.MemberId))
-                                    {
-                                        var payment = Model.LatestPayments[m.MemberId];
-                                        <a href="#" class="dropdown-item btn-print-receipt"
-                                           data-receipt="@payment.ReceiptNumber"
-                                           data-date="@payment.PaymentDate.ToString("dd MMM yyyy")"
-                                           data-name="@m.Name"
-                                           data-member-no="@m.MembershipNumber"
-                                           data-year="@payment.MembershipYear"
-                                           data-amount="@payment.Amount.ToString("C", currency)"
-                                           data-method="@payment.PaymentMethod"
-                                           data-remarks="@payment.Remarks">
-                                            Print Receipt
-                                        </a>
-                                    }
+                                        {
+                                            var payment = Model.LatestPayments[m.MemberId];
+                                    <a href="#" class="dropdown-item btn-print-receipt"
+                                       data-receipt="@payment.ReceiptNumber"
+                                       data-date="@payment.PaymentDate.ToString("dd MMM yyyy")"
+                                       data-name="@m.Name"
+                                       data-member-no="@m.MembershipNumber"
+                                       data-year="@payment.MembershipYear"
+                                       data-amount="@payment.Amount.ToString("C", currency)"
+                                       data-method="@payment.PaymentMethod"
+                                       data-remarks="@payment.Remarks">
+                                        Print Receipt
+                                    </a>
+                                        }
 
                                     <!-- FIX: Do not allow editing if Cancelled -->
                                     @if (m.MembershipStatus != "Cancelled" && (m.MembershipStatus == "Active" || m.ApplicationStatus == "Approved"))
-                                    {
-                                        <a href="@Url.Action("Edit", "Member", new { id = m.MemberId })" class="dropdown-item">Edit Details</a>
-                                    }
+                                        {
+                                    <a href="@Url.Action("Edit", "Member", new { id = m.MemberId })" class="dropdown-item">Edit Details</a>
+                                        }
 
                                     @if (m.ApplicationStatus == CrownTowersClub.Domain.ApplicationStatus.Draft || m.ApplicationStatus.Contains("Rejected"))
-                                    {
-                                        <button type="button" class="dropdown-item btn-delete-record"
-                                                style="color: var(--danger); width: 100%; text-align: left; background: none; border: none; cursor: pointer;"
-                                                data-id="@m.MemberId"
-                                                data-name="@m.Name">
-                                            Delete Record
-                                        </button>
-                                    }
+                                        {
+                                    <button type="button" class="dropdown-item btn-delete-record"
+                                            style="color: var(--danger); width: 100%; text-align: left; background: none; border: none; cursor: pointer;"
+                                            data-id="@m.MemberId"
+                                            data-name="@m.Name">
+                                        Delete Record
+                                    </button>
+                                        }
                                 </div>
                             </div>
                         </td>
                     </tr>
-                }
-            </tbody>
-        </table>
+                    }
+                </tbody>
+            </table>
+        </div>
 
-        <!-- ========================================================
-             5. PAGINATION FOOTER
-             ======================================================== -->
+    <!-- ========================================================
+         5. PAGINATION FOOTER
+         ======================================================== -->
         <div class="flex justify-between items-center" style="margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--outline-variant);">
             <span class="label-sm" style="color: var(--on-surface-variant);">
                 Showing @((Model.CurrentPage - 1) * 15 + 1) - @Math.Min(Model.CurrentPage * 15, Model.TotalRecords) of @Model.TotalRecords
@@ -209,13 +211,13 @@
 
             <div class="flex gap-2">
                 @if (Model.CurrentPage > 1)
-                {
-                    <a href="@Url.Action("Directory", new { search = Model.SearchTerm, tab = Model.CurrentTab, year = Model.SelectedYear, page = Model.CurrentPage - 1 })" class="btn btn--outline" style="padding: 6px 12px; min-height: 32px; font-size: 12px;">Previous</a>
-                }
+                    {
+                <a href="@Url.Action("Directory", new { search = Model.SearchTerm, tab = Model.CurrentTab, year = Model.SelectedYear, page = Model.CurrentPage - 1 })" class="btn btn--outline" style="padding: 6px 12px; min-height: 32px; font-size: 12px;">Previous</a>
+                    }
                 @if (Model.CurrentPage < Model.TotalPages)
-                {
-                    <a href="@Url.Action("Directory", new { search = Model.SearchTerm, tab = Model.CurrentTab, year = Model.SelectedYear, page = Model.CurrentPage + 1 })" class="btn btn--outline" style="padding: 6px 12px; min-height: 32px; font-size: 12px;">Next</a>
-                }
+                    {
+                <a href="@Url.Action("Directory", new { search = Model.SearchTerm, tab = Model.CurrentTab, year = Model.SelectedYear, page = Model.CurrentPage + 1 })" class="btn btn--outline" style="padding: 6px 12px; min-height: 32px; font-size: 12px;">Next</a>
+                    }
             </div>
         </div>
     }

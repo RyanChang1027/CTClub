@@ -1,0 +1,22 @@
+﻿[
+  {
+    "code": "DDIVORCED",
+    "name": "DIVORCED"
+  },
+  {
+    "code": "MARRIED",
+    "name": "MARRIED"
+  },
+  {
+    "code": "OTHER",
+    "name": "OTHER"
+  },
+  {
+    "code": "SINGLE",
+    "name": "SINGLE"
+  },
+  {
+    "code": "WIDOW",
+    "name": "WIDOW"
+  }
+]
