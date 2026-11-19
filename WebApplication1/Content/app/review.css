@@ -53,8 +53,8 @@
     -webkit-overflow-scrolling: touch;
 }
 
-.table-scroll .queue-table {
-    min-width: 680px;
+.table-scroll .queue-table--directory-mobile {
+    min-width: 0;
 }
 
 
@@ -200,6 +200,17 @@
     color: #991b1b; /* Darker red text for the title */
 }
 
+
+/* ==========================================
+   Directory Status Display
+   ========================================== */
+
+/* Mobile status is hidden on desktop */
+.directory-mobile-status {
+    display: none;
+}
+
+
 /* ==========================================
    Directory Tabs
    ========================================== */
@@ -301,6 +312,117 @@
    ============================================================ */
 
 @media (max-width: 767px) {
+
+    /* Directory Table - Mobile Layout */
+    .table-scroll .queue-table--directory-mobile {
+        min-width: 0;
+        table-layout: fixed;
+    }
+
+    /* Show only the Applicant heading */
+    .queue-table--directory-mobile thead tr {
+        display: block;
+    }
+
+    .queue-table--directory-mobile thead th {
+        display: none;
+    }
+
+    .queue-table--directory-mobile thead th:nth-child(2) {
+        display: block;
+    }
+
+    /* Arrange each application as a compact information row */
+    .queue-table--directory-mobile tbody tr {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        row-gap: 4px;
+        align-items: center;
+        padding: 8px 0;
+        border-bottom: 1px solid var(--outline-variant);
+    }
+
+    /* Let applicant details and status participate in the row grid */
+    .queue-table--directory-mobile tbody .directory-applicant-cell {
+        display: contents;
+    }
+
+    .queue-table--directory-mobile .directory-applicant-main {
+        grid-column: 1 / -1;
+        grid-row: 1;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        column-gap: 8px;
+        row-gap: 2px;
+        min-width: 0;
+    }
+
+    .queue-table--directory-mobile .directory-applicant-name {
+        overflow-wrap: anywhere;
+    }
+
+    .queue-table--directory-mobile .directory-applicant-nric {
+        white-space: nowrap;
+    }
+
+    /* Date and action share the second line */
+    .queue-table--directory-mobile tbody td:nth-child(1) {
+        grid-column: 1;
+        grid-row: 2;
+        white-space: nowrap;
+    }
+
+    .queue-table--directory-mobile tbody td:nth-child(6) {
+        grid-column: 2;
+        grid-row: 2;
+        padding: 0;
+        text-align: right;
+    }
+
+    /* Status appears on the third line */
+    .queue-table--directory-mobile .directory-mobile-status {
+        grid-column: 1 / -1;
+        grid-row: 3;
+        display: block;
+        margin-top: 0;
+    }
+
+    /* Hide desktop-only information */
+    .queue-table--directory-mobile tbody td:nth-child(3),
+    .queue-table--directory-mobile tbody td:nth-child(4),
+    .queue-table--directory-mobile tbody td:nth-child(5) {
+        display: none;
+    }
+
+    /* Remove individual cell borders and padding */
+    .queue-table--directory-mobile tbody td {
+        padding: 0;
+        border-bottom: 0;
+    }
+
+    .queue-table--directory-mobile .directory-desktop-status {
+        display: none;
+    }
+
+    /* Directory mobile row hover */
+    .queue-table--directory-mobile tbody tr:hover {
+        background-color: #fff1cc;
+    }
+
+    .queue-table--directory-mobile tbody tr:hover td {
+        background-color: transparent;
+    }
+
+    .directory-desktop-status {
+        display: none;
+    }
+
+    .directory-mobile-status {
+        display: block;
+        margin-top: 6px;
+    }
+
     .step-name {
         font-size: 10px;
     }
@@ -314,9 +436,6 @@
     .stepper-wrapper::before {
         top: 11px;
     }
-
-
-
 
     .card.applications-list-card {
         padding: 0;

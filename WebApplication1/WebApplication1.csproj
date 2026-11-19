@@ -170,6 +170,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\app\app-shell.css" />
+    <Content Include="Content\app\images\chitchat-whatsapp.png" />
+    <Content Include="Content\app\images\krctk-logo.png" />
+    <Content Include="Content\app\images\[ori]krctk.png" />
     <Content Include="Content\app\progress-bar.css" />
     <Content Include="Content\app\review.css" />
     <Content Include="Content\app\images\news-whatsapp.png" />
