@@ -453,6 +453,138 @@
         background-color: transparent;
     }
 
+    /* My Applications - Mobile Card Layout */
+
+    .queue-table--mobile-cards {
+        display: block;
+        width: 100%;
+        border-collapse: separate;
+    }
+
+    .queue-table--mobile-cards thead {
+        display: none;
+    }
+
+    .queue-table--mobile-cards tbody {
+        display: block;
+        width: 100%;
+    }
+
+    /* Main application card */
+    .queue-table--mobile-cards tbody tr {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        column-gap: 20px;
+        row-gap: 0;
+        margin-bottom: 16px;
+        padding: 20px;
+        background: #fff;
+        border: 1px solid var(--outline-variant);
+        border-radius: 14px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    }
+
+    /* Shared field styling */
+    .queue-table--mobile-cards tbody td {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 7px;
+        min-width: 0;
+        padding: 0;
+        border: 0;
+        text-align: left;
+    }
+
+    /* Field labels */
+    .queue-table--mobile-cards tbody td::before {
+        content: attr(data-label);
+        color: var(--on-surface-variant);
+        font-size: 11px;
+        font-weight: bold;
+        letter-spacing: 0.045em;
+        text-transform: uppercase;
+    }
+
+    /* Top row: Application Date and Application Status */
+    .queue-table--mobile-cards tbody td:nth-child(1) {
+        grid-column: 1;
+        grid-row: 1;
+    }
+
+    .queue-table--mobile-cards tbody td:nth-child(2) {
+        grid-column: 2;
+        grid-row: 1;
+    }
+
+    /* Membership Details heading */
+    .queue-table--mobile-cards .membership-details-heading {
+        grid-column: 1 / -1;
+        grid-row: 2;
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px solid var(--outline-variant);
+        color: var(--on-surface-variant);
+        font-size: 11px;
+        font-weight: bold;
+        letter-spacing: 0.045em;
+        text-transform: uppercase;
+    }
+
+    /* Membership Number */
+    .queue-table--mobile-cards tbody td:nth-child(4) {
+        grid-column: 1;
+        grid-row: 3;
+    }
+
+    /* Membership Status */
+    .queue-table--mobile-cards tbody td:nth-child(5) {
+        grid-column: 2;
+        grid-row: 3;
+    }
+
+    /* Membership fields spacing */
+    .queue-table--mobile-cards tbody td:nth-child(4),
+    .queue-table--mobile-cards tbody td:nth-child(5) {
+        padding-top: 7px;
+        padding-bottom: 10px;
+    }
+
+    /* Status badges */
+    .queue-table--mobile-cards .status-pill {
+        width: auto;
+        max-width: 100%;
+        min-height: 30px;
+    }
+
+    /* Full-width action button */
+    .queue-table--mobile-cards tbody td.queue-table__action {
+        grid-column: 1 / -1;
+        grid-row: 4;
+        width: auto;
+        white-space: normal;
+        padding-top: 16px;
+        border-top: 1px solid var(--outline-variant);
+    }
+
+    .queue-table--mobile-cards tbody td.queue-table__action::before {
+        display: none;
+    }
+
+    .queue-table--mobile-cards .queue-table__action .btn {
+        display: flex;
+        width: 100%;
+        min-height: 50px;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+    }
+
+    /* Remove desktop hover effect */
+    .queue-table--mobile-cards tbody tr:hover td {
+        background: transparent;
+    }
+
     .directory-desktop-status {
         display: none;
     }

@@ -104,17 +104,22 @@
                             @m.ApplicationDate.ToString("yyyy-MM-dd")
                         </td>
 
+
                         <td data-label="Application Status">
                             <span class="status-pill status-pill--@(m.ApplicationStatus == CrownTowersClub.Domain.ApplicationStatus.Approved ? "approved" : m.ApplicationStatus == CrownTowersClub.Domain.ApplicationStatus.Draft ? "draft" : m.ApplicationStatus.Contains("Rejected") ? "rejected" : m.ApplicationStatus == CrownTowersClub.Domain.ApplicationStatus.ReturnedForCorrection ? "returned" : "pending")">
                                 @m.ApplicationStatus
                             </span>
                         </td>
 
-                        <td data-label="Membership No.">
+                        <td class="membership-details-heading" colspan="2">
+                            Membership Details
+                        </td>
+
+                        <td data-label="Membership Number">
                             @(m.MembershipNumber ?? "-")
                         </td>
 
-                        <td data-label="Member Status">
+                        <td data-label="Membership Status">
                             @if (m.MembershipStatus == "Pending Activation")
                             {
                                 <span class="status-pill status-pill--pending">
@@ -147,7 +152,7 @@
                             else
                             {
                                 @Html.ActionLink(
-                                    "View",
+                                    "View Application",
                                     "Detail",
                                     "Review",
                                     new { id = m.MemberId },
