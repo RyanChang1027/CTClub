@@ -777,8 +777,21 @@ namespace CrownTowersClub.Repositories
                 var searchParam = string.IsNullOrWhiteSpace(searchTerm) ? null : searchTerm.Trim();
                 var tabParam = tabFilter ?? "All";
 
+                // Shared directory filters used by all three queries.
+                string directoryFilterSql = @"
+                    WHERE (@SearchTerm IS NULL
+                        OR m.Name LIKE '%' + @SearchTerm + '%'
+                        OR m.NRIC LIKE '%' + @SearchTerm + '%')
+                      AND (
+                          m.ApplicationStatus NOT IN ('Approved')
+                          OR (
+                              m.ApplicationStatus = 'Approved'
+                              AND mt.MembershipTermId IS NOT NULL
+                          )
+                      )";
+
                 // 1. Tab Counts (Year-Aware)
-                string countSql = @"
+                string countSql = $@"
                     SELECT 
                         COUNT(DISTINCT m.MemberId) AS CountAll,
                         SUM(CASE WHEN m.ApplicationStatus IN ('Pending for Verification', 'Verified') THEN 1 ELSE 0 END) AS CountPending,
@@ -787,13 +800,7 @@ namespace CrownTowersClub.Repositories
                     FROM dbo.Members m
                     LEFT JOIN dbo.Memberships ms ON m.MemberId = ms.MemberId
                     LEFT JOIN dbo.MembershipTerms mt ON ms.MembershipId = mt.MembershipId AND mt.MembershipYear = @Year
-                    WHERE (@SearchTerm IS NULL OR m.Name LIKE '%' + @SearchTerm + '%' OR m.NRIC LIKE '%' + @SearchTerm + '%')
-                      AND (
-                          -- Show non-approved apps normally
-                          m.ApplicationStatus NOT IN ('Approved') 
-                          -- OR show approved apps IF they have a term for the selected year
-                          OR (m.ApplicationStatus = 'Approved' AND mt.MembershipTermId IS NOT NULL)
-                      );";
+                    {directoryFilterSql};";
 
                 var counts = db.QuerySingle<dynamic>(countSql, new { SearchTerm = searchParam, Year = year });
 
@@ -811,11 +818,7 @@ namespace CrownTowersClub.Repositories
                     SELECT COUNT(1) FROM dbo.Members m
                     LEFT JOIN dbo.Memberships ms ON m.MemberId = ms.MemberId
                     LEFT JOIN dbo.MembershipTerms mt ON ms.MembershipId = mt.MembershipId AND mt.MembershipYear = @Year
-                    WHERE (@SearchTerm IS NULL OR m.Name LIKE '%' + @SearchTerm + '%' OR m.NRIC LIKE '%' + @SearchTerm + '%')
-                      AND (
-                          m.ApplicationStatus NOT IN ('Approved') 
-                          OR (m.ApplicationStatus = 'Approved' AND mt.MembershipTermId IS NOT NULL)
-                      )
+                    {directoryFilterSql}
                     {filterClause};";
 
                 int totalRecords = db.ExecuteScalar<int>(totalSql, new { SearchTerm = searchParam, Year = year });
@@ -833,11 +836,7 @@ namespace CrownTowersClub.Repositories
                     LEFT JOIN dbo.Memberships ms ON m.MemberId = ms.MemberId
                     LEFT JOIN dbo.MembershipTerms mt ON ms.MembershipId = mt.MembershipId 
                         AND mt.MembershipYear = @Year
-                    WHERE (@SearchTerm IS NULL OR m.Name LIKE '%' + @SearchTerm + '%' OR m.NRIC LIKE '%' + @SearchTerm + '%')
-                      AND (
-                          m.ApplicationStatus NOT IN ('Approved') 
-                          OR (m.ApplicationStatus = 'Approved' AND mt.MembershipTermId IS NOT NULL)
-                      )
+                    {directoryFilterSql}
                     {filterClause}
                     ORDER BY m.ApplicationDate DESC, m.MemberId DESC
                     OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;";

@@ -39,11 +39,6 @@
                         </td>
                         <td>@m.MembershipYear</td>
                         <td>@m.FeeAmount.ToString("C", System.Globalization.CultureInfo.CreateSpecificCulture("ms-MY"))</td>
-                        <td>
-                            <span class="status-pill status-pill--pending">
-                                @m.MembershipStatus / @m.TermStatus
-                            </span>
-                        </td>
                         <td class="queue-table__action">
                             <!-- Pass data via data-attributes to the JS -->
                             <button class="btn btn--primary btn-record-payment"

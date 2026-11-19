@@ -316,15 +316,6 @@ App.Review.page = (function (window, document, $, baseApi, notifications) {
         return "The request could not be completed.";
     }
 
-        function cancelMembership(memberId) {
-        if (!window.Swal) {
-            var reason = window.prompt("Enter reason for cancelling this membership:");
-            if (reason && reason.trim()) {
-                post("/Review/CancelMembership", { id: memberId, reason: reason.trim() }, null, "Cancelling...", "Membership cancelled.", "/Review/Directory");
-            }
-            return;
-        }
-
         window.Swal.fire({
             title: "Cancel Membership?",
             text: "This action is permanent. It will expire their current terms and remove their active status.",
