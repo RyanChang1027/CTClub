@@ -3,7 +3,7 @@ using CrownTowersClub.Models;
 
 namespace CrownTowersClub.ViewModels
 {
-    public sealed class PendingReviewViewModel
+    public sealed class ApplicationListViewModel
     {
         public IReadOnlyList<Member> Members { get; set; }
 

@@ -1,4 +1,4 @@
-﻿@model IReadOnlyList<CrownTowersClub.Models.Member>
+﻿@model CrownTowersClub.ViewModels.ApplicationListViewModel
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewBag.Title = "Verified Applications";
@@ -12,14 +12,14 @@
 </section>
 
 <section class="card">
-    @if (Model == null || Model.Count == 0)
+    @if (Model == null || Model.Members == null || Model.Members.Count == 0)
     {
         <p class="body-md">No verified applications awaiting approval.</p>
     }
     else
     {
-        <div class="table-scroll">
-            <table class="queue-table">
+        <div class="table-scroll pending-review-table-scroll">
+            <table class="queue-table queue-table--pending-mobile">
                 <thead>
                     <tr>
                         <th>Applicant</th>
@@ -30,33 +30,84 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var m in Model)
+                    @foreach (var m in Model.Members)
                     {
                         <tr>
-                            <td>@m.Name</td>
-                            <td>@m.Department</td>
-                            <td>
-                                @(m.UpdatedAt.HasValue
-                ? m.UpdatedAt.Value.ToString("yyyy-MM-dd")
-                : m.ApplicationDate.ToString("yyyy-MM-dd"))
+                            <td class="pending-applicant-cell">
+                                <div class="pending-applicant-heading">
+                                    <strong class="pending-applicant-name">@m.Name</strong>
+
+                                    <span class="status-pill status-pill--verified">
+                                        @m.ApplicationStatus
+                                    </span>
+                                </div>
+
+                                <span class="pending-application-id">
+                                    Application ID: @m.MemberId
+                                </span>
                             </td>
-                            <td>
+
+                            <td class="pending-nric-cell">
+                                <span class="pending-mobile-label">Department</span>
+                                @m.Department
+                            </td>
+
+                            <td class="pending-date-cell">
+                                <span class="pending-mobile-label">Verified</span>
+                                @(m.UpdatedAt.HasValue
+                                    ? m.UpdatedAt.Value.ToString("yyyy-MM-dd")
+                                    : m.ApplicationDate.ToString("yyyy-MM-dd"))
+                            </td>
+
+                            <td class="pending-desktop-status">
                                 <span class="status-pill status-pill--verified">
                                     @m.ApplicationStatus
                                 </span>
                             </td>
-                            <td class="queue-table__action">
+
+                            <td class="queue-table__action pending-review-action">
                                 @Html.ActionLink(
-                         "Review",
-                         "Detail",
-                         "Review",
-                         new { id = m.MemberId },
-                         new { @class = "btn btn--primary" })
+                                    "Review",
+                                    "Detail",
+                                    "Review",
+                                    new { id = m.MemberId },
+                                    new { @class = "btn btn--primary" })
                             </td>
                         </tr>
                     }
                 </tbody>
             </table>
         </div>
+
+        if (Model.TotalRecords > 0)
+        {
+            <div class="flex justify-between items-center"
+                 style="margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--outline-variant);">
+
+                <span class="label-sm" style="color: var(--on-surface-variant);">
+                    Showing @((Model.CurrentPage - 1) * Model.PageSize + 1)
+                    - @Math.Min(Model.CurrentPage * Model.PageSize, Model.TotalRecords)
+                    of @Model.TotalRecords
+                </span>
+
+                <div class="flex gap-2">
+                    @if (Model.CurrentPage > 1)
+                    {
+                        <a href="@Url.Action("Verified", "Review", new { page = Model.CurrentPage - 1 })"
+                           class="btn btn--outline">
+                            Previous
+                        </a>
+                    }
+
+                    @if (Model.CurrentPage < Model.TotalPages)
+                    {
+                        <a href="@Url.Action("Verified", "Review", new { page = Model.CurrentPage + 1 })"
+                           class="btn btn--outline">
+                            Next
+                        </a>
+                    }
+                </div>
+            </div>
+        }
     }
 </section>

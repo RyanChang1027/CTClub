@@ -42,15 +42,15 @@ namespace CrownTowersClub.Controllers
             // 2. Get stats based on role
             if (user.Role == DevRoles.DepartmentHead)
             {
-                var pending = memberRepository.GetPendingByHod(user.NRIC);
-                ViewBag.PendingReviewsCount = pending.Count;
+                var pendingCount = memberRepository.GetPendingByHodCount(user.NRIC);
+                ViewBag.PendingReviewsCount = pendingCount;
             }
             else if (user.Role == DevRoles.Committee)
             {
-                var verified = memberRepository.GetVerifiedAll();
+                var verifiedCount = memberRepository.GetVerifiedCount();
                 var payments = memberRepository.GetPendingPayments(DateTime.Now.Year);
 
-                ViewBag.VerifiedCount = verified.Count;
+                ViewBag.VerifiedCount = verifiedCount;
                 ViewBag.PaymentsCount = payments.Count;
             }
 

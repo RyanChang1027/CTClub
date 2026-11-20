@@ -47,10 +47,10 @@ namespace CrownTowersClub.Repositories
         IReadOnlyList<Payment> GetPaymentsByMemberId(int memberId);
 
 
-        /* ===========IReadOnlyList<Member> GetPendingByHod(string hodNric);=================================================
-           2. Write Actions (Creating & Updating)
-           ============================================================ */
-
+        /* ============================================================
+            2. Write Actions (Creating & Updating)
+            ============================================================ */
+        
         /// <summary>
         /// Inserts a brand new application with the specified status (e.g., Pending or Verified).
         /// </summary>
@@ -88,15 +88,6 @@ namespace CrownTowersClub.Repositories
            ============================================================ */
 
         /// <summary>
-        /// Gets all pending applications for staff under a specific HOD's NRIC.
-        /// </summary>
-        IReadOnlyList<Member> GetPendingByHod(string hodNric);
-        PendingReviewViewModel GetPendingByHodPaged(
-            string hodNric,
-            int page,
-            int pageSize);
-
-        /// <summary>
         /// Marks an application as Verified (moves to Committee queue).
         /// </summary>
         bool VerifyByDeptHead(int memberId, string expectedDepartment, string changedBy);
@@ -111,15 +102,11 @@ namespace CrownTowersClub.Repositories
         /// </summary>
         bool ReturnByDeptHead(int memberId, string expectedDepartment, string reason, string changedBy);
 
+        int GetPendingByHodCount(string hodNric);
 
         /* ============================================================
            4. Committee Actions
            ============================================================ */
-
-        /// <summary>
-        /// Gets all applications that are verified and awaiting Committee approval.
-        /// </summary>
-        IReadOnlyList<Member> GetVerifiedAll();
 
         /// <summary>
         /// Approves the application, generates a Membership Number, creates a Membership,
@@ -134,6 +121,9 @@ namespace CrownTowersClub.Repositories
 
         bool CancelMembership(int memberId, string reason, string changedBy);
 
+        ApplicationListViewModel GetVerifiedPaged(int page, int pageSize);
+
+        int GetVerifiedCount();
 
         /* ============================================================
            5. Payments & Renewals

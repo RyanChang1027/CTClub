@@ -167,7 +167,7 @@
     <Compile Include="ViewModels\MembershipCardViewModel.cs" />
     <Compile Include="ViewModels\PaymentDashboardViewModel.cs" />
     <Compile Include="ViewModels\PendingPaymentViewModel.cs" />
-    <Compile Include="ViewModels\PendingReviewViewModel.cs" />
+    <Compile Include="ViewModels\ApplicationListViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\app\app-shell.css" />
