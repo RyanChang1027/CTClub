@@ -247,6 +247,44 @@ else
                     </a>
                 </div>
             }
+            else if (Model.ApplicationStatus == "Returned for Correction")
+            {
+                <!-- Returned for Correction -->
+                <div class="dashboard-status dashboard-status--returned">
+                    <span class="material-symbols-outlined">edit_note</span>
+                    <strong class="body-lg">@Model.ApplicationStatus</strong>
+                </div>
+
+                <p class="body-md">
+                    Your application has been returned for correction.
+                    Please review and update the required information.
+                </p>
+
+                <div class="dashboard-actions">
+                    <a href="@Url.Action("Mine", "Member")" class="btn btn--outline">
+                        My Applications
+                    </a>
+                </div>
+            }
+            else if (Model.ApplicationStatus == "Rejected by Dept Head" ||
+                     Model.ApplicationStatus == "Rejected by Committee")
+            {
+                <!-- Rejected Application -->
+                <div class="dashboard-status dashboard-status--rejected">
+                    <span class="material-symbols-outlined">cancel</span>
+                    <strong class="body-lg">@Model.ApplicationStatus</strong>
+                </div>
+
+                <p class="body-md">
+                    Unfortunately, your membership application has been rejected.
+                </p>
+
+                <div class="dashboard-actions">
+                    <a href="@Url.Action("Mine", "Member")" class="btn btn--outline">
+                        My Applications
+                    </a>
+                </div>
+            }
             else
             {
                 <!-- Pending / Verified / Draft -->
@@ -254,7 +292,9 @@ else
                     <span class="material-symbols-outlined" style="font-size: 32px;">hourglass_top</span>
                     <strong class="body-lg">@Model.ApplicationStatus</strong>
                 </div>
+
                 <p class="body-md">Your application is currently being processed.</p>
+
                 <div class="dashboard-actions">
                     <a href="@Url.Action("Mine", "Member")" class="btn btn--outline">
                         My Applications

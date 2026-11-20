@@ -1,0 +1,22 @@
+﻿/* ============================================================
+   Dashboard membership status
+   ============================================================ */
+
+.dashboard-status {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+    .dashboard-status .material-symbols-outlined {
+        font-size: 32px;
+    }
+
+.dashboard-status--returned {
+    color: var(--secondary);
+}
+
+.dashboard-status--rejected {
+    color: var(--danger);
+}
