@@ -757,7 +757,7 @@
     }
 
     /* NRIC and Submitted date */
-    .queue-table--pending-mobile .pending-nric-cell {
+    .queue-table--pending-mobile .pending-application-column {
         grid-column: 1;
         grid-row: 2;
     }
