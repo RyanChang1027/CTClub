@@ -665,3 +665,143 @@
         border-radius: 9px;
     }
 }
+
+
+/* ============================================================
+   Pending Reviews - Mobile Layout
+   ============================================================ */
+
+.pending-mobile-label {
+    display: none;
+}
+
+.pending-applicant-heading .status-pill {
+    display: none;
+}
+
+@media (max-width: 767px) {
+
+    .pending-review-table-scroll {
+        overflow-x: hidden;
+    }
+
+    .queue-table--pending-mobile {
+        display: block;
+        width: 100%;
+        min-width: 0;
+        border-collapse: separate;
+    }
+
+    .queue-table--pending-mobile thead {
+        display: none;
+    }
+
+    .queue-table--pending-mobile tbody {
+        display: block;
+        width: 100%;
+    }
+
+    /* Each application is one entry inside the shared card */
+    .queue-table--pending-mobile tbody tr {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        column-gap: 16px;
+        row-gap: 14px;
+        padding: 20px 0;
+        border-bottom: 1px solid var(--outline-variant);
+    }
+
+    .queue-table--pending-mobile tbody tr:last-child {
+        border-bottom: 0;
+    }
+
+    .queue-table--pending-mobile tbody td {
+        display: block;
+        min-width: 0;
+        padding: 0;
+        border: 0;
+        text-align: left;
+        overflow-wrap: anywhere;
+    }
+
+    /* Applicant name, status and application ID */
+    .queue-table--pending-mobile .pending-applicant-cell {
+        grid-column: 1 / -1;
+        grid-row: 1;
+    }
+
+    .pending-applicant-heading {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .pending-applicant-heading .status-pill {
+        display: inline-flex;
+        flex-shrink: 0;
+    }
+
+    .pending-applicant-name {
+        min-width: 0;
+        overflow-wrap: anywhere;
+        font-size: 15px;
+    }
+
+    .pending-application-id {
+        display: block;
+        margin-top: 6px;
+        color: var(--on-surface-variant);
+        font-size: 12px;
+    }
+
+    /* NRIC and Submitted date */
+    .queue-table--pending-mobile .pending-nric-cell {
+        grid-column: 1;
+        grid-row: 2;
+    }
+
+    .queue-table--pending-mobile .pending-date-cell {
+        grid-column: 2;
+        grid-row: 2;
+    }
+
+    .pending-mobile-label {
+        display: block;
+        margin-bottom: 5px;
+        color: var(--on-surface-variant);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.045em;
+        text-transform: uppercase;
+    }
+
+    /* Hide the duplicate desktop status column */
+    .queue-table--pending-mobile .pending-desktop-status {
+        display: none;
+    }
+
+    /* Full-width Review button */
+    .queue-table--pending-mobile tbody td.pending-review-action {
+        grid-column: 1 / -1;
+        grid-row: 3;
+        width: 100%;
+        padding-top: 4px;
+        white-space: normal;
+    }
+
+    .queue-table--pending-mobile .pending-review-action .btn {
+        display: flex;
+        width: 100%;
+        min-height: 48px;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+    }
+
+    /* Remove desktop hover background */
+    .queue-table--pending-mobile tbody tr:hover td {
+        background: transparent;
+    }
+}

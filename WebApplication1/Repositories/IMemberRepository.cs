@@ -47,7 +47,7 @@ namespace CrownTowersClub.Repositories
         IReadOnlyList<Payment> GetPaymentsByMemberId(int memberId);
 
 
-        /* ============================================================
+        /* ===========IReadOnlyList<Member> GetPendingByHod(string hodNric);=================================================
            2. Write Actions (Creating & Updating)
            ============================================================ */
 
@@ -91,6 +91,10 @@ namespace CrownTowersClub.Repositories
         /// Gets all pending applications for staff under a specific HOD's NRIC.
         /// </summary>
         IReadOnlyList<Member> GetPendingByHod(string hodNric);
+        PendingReviewViewModel GetPendingByHodPaged(
+            string hodNric,
+            int page,
+            int pageSize);
 
         /// <summary>
         /// Marks an application as Verified (moves to Committee queue).
