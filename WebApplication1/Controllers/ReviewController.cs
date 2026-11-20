@@ -48,12 +48,18 @@ namespace CrownTowersClub.Controllers
         }
 
         [HttpGet]
-        public ActionResult Verified()
+        public ActionResult Verified(int page = 1)
         {
-            if (!IsCommittee()) return RedirectToAction("Index", "Home");
+            if (!IsCommittee())
+                return RedirectToAction("Index", "Home");
 
-            var rows = repository.GetVerifiedAll();
-            return View(rows);
+            const int pageSize = 15;
+
+            var viewModel = repository.GetVerifiedPaged(
+                page,
+                pageSize);
+
+            return View(viewModel);
         }
 
         [HttpGet]

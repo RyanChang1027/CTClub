@@ -274,40 +274,31 @@ namespace CrownTowersClub.Repositories
 
         #region 3. Department Head Actions
 
-        public IReadOnlyList<Member> GetPendingByHod(string hodNric)
+        public int GetPendingByHodCount(string hodNric)
         {
             const string sql = @"
-                SELECT 
-                    m.*,
-                    ms.MembershipId,
-                    ms.MembershipNumber,
-                    ms.MembershipStatus,
-                    mt.TermStatus AS CurrentTermStatus
+                SELECT COUNT(1)
                 FROM dbo.Members m
-                INNER JOIN [dbo].[fnHOD_Staff_Get](null) h 
-                    ON m.NRIC COLLATE Latin1_General_CI_AI = h.[staff ic] 
-                LEFT JOIN dbo.Memberships ms ON m.MemberId = ms.MemberId
-                LEFT JOIN dbo.MembershipTerms mt ON ms.MembershipId = mt.MembershipId 
-                    AND mt.MembershipYear = YEAR(GETDATE())
+                INNER JOIN [dbo].[fnHOD_Staff_Get](null) h
+                    ON m.NRIC COLLATE Latin1_General_CI_AI = h.[staff ic]
                 WHERE m.ApplicationStatus = 'Pending for Verification'
-                  AND h.[hod ic] = @HodNric
-                ORDER BY m.ApplicationDate ASC, m.MemberId ASC;";
+                  AND h.[hod ic] = @HodNric;";
 
             using (IDbConnection db = connectionFactory.Create())
-                return db.Query<Member>(sql, new { HodNric = hodNric }).ToList();
+            {
+                return db.ExecuteScalar<int>(
+                    sql,
+                    new { HodNric = hodNric });
+            }
         }
 
-        public PendingReviewViewModel GetPendingByHodPaged(
+        public ApplicationListViewModel GetPendingByHodPaged(
             string hodNric,
             int page,
             int pageSize)
         {
-            page = Math.Max(1, page);
-            pageSize = Math.Max(1, pageSize);
-
             using (IDbConnection db = connectionFactory.Create())
             {
-                // 1. Count all pending applications belonging to this HOD.
                 const string countSql = @"
                     SELECT COUNT(1)
                     FROM dbo.Members m
@@ -316,11 +307,6 @@ namespace CrownTowersClub.Repositories
                     WHERE m.ApplicationStatus = 'Pending for Verification'
                       AND h.[hod ic] = @HodNric;";
 
-                int totalRecords = db.ExecuteScalar<int>(
-                    countSql,
-                    new { HodNric = hodNric });
-
-                // 2. Retrieve only the records for the selected page.
                 const string dataSql = @"
                     SELECT
                         m.*,
@@ -342,26 +328,13 @@ namespace CrownTowersClub.Repositories
                     OFFSET @Offset ROWS
                     FETCH NEXT @PageSize ROWS ONLY;";
 
-                var members = db.Query<Member>(dataSql, new
-                {
-                    HodNric = hodNric,
-                    Offset = (page - 1) * pageSize,
-                    PageSize = pageSize
-                }).ToList();
-
-                // 3. Calculate the total number of pages.
-                int totalPages = (int)Math.Ceiling(
-                    (double)totalRecords / pageSize);
-
-                // 4. Return the paginated result.
-                return new PendingReviewViewModel
-                {
-                    Members = members,
-                    CurrentPage = page,
-                    TotalPages = totalPages,
-                    TotalRecords = totalRecords,
-                    PageSize = pageSize
-                };
+                return GetPagedApplications(
+                    db,
+                    countSql,
+                    dataSql,
+                    new { HodNric = hodNric },
+                    page,
+                    pageSize);
             }
         }
 
@@ -413,16 +386,46 @@ namespace CrownTowersClub.Repositories
 
         #region 4. Committee Actions
 
-        public IReadOnlyList<Member> GetVerifiedAll()
+        public int GetVerifiedCount()
         {
             const string sql = @"
-                SELECT *
+                SELECT COUNT(1)
                 FROM dbo.Members
-                WHERE ApplicationStatus = 'Verified'
-                ORDER BY ApplicationDate ASC, MemberId ASC;";
+                WHERE ApplicationStatus = 'Verified';";
 
             using (IDbConnection db = connectionFactory.Create())
-                return db.Query<Member>(sql).ToList();
+            {
+                return db.ExecuteScalar<int>(sql);
+            }
+        }
+
+        public ApplicationListViewModel GetVerifiedPaged(
+    int page,
+    int pageSize)
+        {
+            using (IDbConnection db = connectionFactory.Create())
+            {
+                const string countSql = @"
+                    SELECT COUNT(1)
+                    FROM dbo.Members
+                    WHERE ApplicationStatus = 'Verified';";
+
+                const string dataSql = @"
+                    SELECT *
+                    FROM dbo.Members
+                    WHERE ApplicationStatus = 'Verified'
+                    ORDER BY ApplicationDate ASC, MemberId ASC
+                    OFFSET @Offset ROWS
+                    FETCH NEXT @PageSize ROWS ONLY;";
+
+                return GetPagedApplications(
+                    db,
+                    countSql,
+                    dataSql,
+                    null,
+                    page,
+                    pageSize);
+            }
         }
 
         public string ApproveByCommittee(int memberId, string changedBy)
@@ -509,7 +512,6 @@ namespace CrownTowersClub.Repositories
                 return db.Execute(sql, new { memberId, reason, changedBy }) == 1;
         }
 
-        // Add this inside MemberRepository.cs
         public bool CancelMembership(int memberId, string reason, string changedBy)
         {
             using (IDbConnection db = connectionFactory.Create())
@@ -957,5 +959,47 @@ namespace CrownTowersClub.Repositories
         }
 
         #endregion
+
+        private ApplicationListViewModel GetPagedApplications(
+            IDbConnection db,
+            string countSql,
+            string dataSql,
+            object parameters,
+            int page,
+            int pageSize)
+        {
+            page = Math.Max(1, page);
+            pageSize = Math.Max(1, pageSize);
+
+            // 1. Count all matching applications.
+            int totalRecords = db.ExecuteScalar<int>(
+                countSql,
+                parameters);
+
+            // 2. Add pagination parameters to the existing query parameters.
+            var dataParameters = new DynamicParameters(parameters);
+
+            dataParameters.Add("Offset", (page - 1) * pageSize);
+            dataParameters.Add("PageSize", pageSize);
+
+            // 3. Retrieve only the records for the selected page.
+            var members = db.Query<Member>(
+                dataSql,
+                dataParameters).ToList();
+
+            // 4. Calculate the total number of pages.
+            int totalPages = (int)Math.Ceiling(
+                (double)totalRecords / pageSize);
+
+            // 5. Return the paginated result.
+            return new ApplicationListViewModel
+            {
+                Members = members,
+                CurrentPage = page,
+                TotalPages = totalPages,
+                TotalRecords = totalRecords,
+                PageSize = pageSize
+            };
+        }
     }
 }

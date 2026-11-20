@@ -9,9 +9,9 @@
     margin-bottom: 16px;
 }
 
-    .dashboard-status .material-symbols-outlined {
-        font-size: 32px;
-    }
+.dashboard-status .material-symbols-outlined {
+    font-size: 32px;
+}
 
 .dashboard-status--returned {
     color: var(--secondary);
