@@ -104,6 +104,11 @@ namespace CrownTowersClub.Repositories
 
         int GetPendingByHodCount(string hodNric);
 
+        ApplicationListViewModel GetPendingByHodPaged(
+            string hodNric,
+            int page,
+            int pageSize);
+
         /* ============================================================
            4. Committee Actions
            ============================================================ */
