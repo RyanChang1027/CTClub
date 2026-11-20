@@ -131,9 +131,9 @@
                 </div>
             }
             else
-            {
+            {                
                 <div class="table-scroll">
-                    <table class="queue-table">
+                    <table class="queue-table queue-table--payment-mobile">
                         <thead>
                             <tr>
                                 <th>Mbr. Number</th>
@@ -147,20 +147,24 @@
                             @foreach (var m in Model.PendingPayments)
                             {
                                 <tr>
-                                    <td><strong>@m.MembershipNumber</strong></td>
-                                    <td>
+                                    <td data-label="Membership Number">
+                                        <strong>@m.MembershipNumber</strong>
+                                    </td>
+                                    <td data-label="Applicant">
                                         @m.Name<br />
                                         <span class="label-sm" style="color: var(--on-surface-variant);">@m.NRIC</span>
                                     </td>
-                                    <td>@m.MembershipYear</td>
-                                    <td><strong>@m.FeeAmount.ToString("C", currency)</strong></td>
+                                    <td data-label="Year">@m.MembershipYear</td>
+                                    <td data-label="Amount Due">
+                                        <strong>@m.FeeAmount.ToString("C", currency)</strong>
+                                    </td>
                                     <td class="queue-table__action">
                                         <button class="btn btn--primary btn-record-payment"
-                                            type="button"
-                                            data-term-id="@m.MembershipTermId"
-                                            data-amount="@m.FeeAmount"
-                                            data-name="@m.Name">
-                                        Record Payment
+                                                type="button"
+                                                data-term-id="@m.MembershipTermId"
+                                                data-amount="@m.FeeAmount"
+                                                data-name="@m.Name">
+                                            Record Payment
                                         </button>
                                     </td>
                                 </tr>
@@ -182,9 +186,9 @@
                 </p>
             }
             else
-            {
+            {                
                 <div class="table-scroll">
-                    <table class="queue-table">
+                    <table class="queue-table queue-table--payment-mobile">
                         <thead>
                             <tr>
                                 <th>Receipt No.</th>
@@ -200,12 +204,18 @@
                             @foreach (var p in Model.PaymentHistory)
                             {
                                 <tr>
-                                    <td><strong>@p.ReceiptNumber</strong></td>
-                                    <td>@p.PaymentDate.ToString("yyyy-MM-dd")</td>
-                                    <td>@p.Name</td>
-                                    <td>@p.MembershipYear</td>
-                                    <td>@p.Amount.ToString("C", currency)</td>
-                                    <td>@p.PaymentMethod</td>
+                                    <td data-label="Receipt Number">
+                                        <strong>@p.ReceiptNumber</strong>
+                                    </td>
+                                    <td data-label="Payment Date">
+                                        @p.PaymentDate.ToString("yyyy-MM-dd")
+                                    </td>
+                                    <td data-label="Applicant">@p.Name</td>
+                                    <td data-label="Year">@p.MembershipYear</td>
+                                    <td data-label="Amount">
+                                        @p.Amount.ToString("C", currency)
+                                    </td>
+                                    <td data-label="Payment Method">@p.PaymentMethod</td>
                                     <td class="queue-table__action">
                                         <button class="btn btn--primary btn-print-receipt"
                                                 type="button"
