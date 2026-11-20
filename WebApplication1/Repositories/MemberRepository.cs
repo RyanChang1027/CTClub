@@ -297,6 +297,74 @@ namespace CrownTowersClub.Repositories
                 return db.Query<Member>(sql, new { HodNric = hodNric }).ToList();
         }
 
+        public PendingReviewViewModel GetPendingByHodPaged(
+            string hodNric,
+            int page,
+            int pageSize)
+        {
+            page = Math.Max(1, page);
+            pageSize = Math.Max(1, pageSize);
+
+            using (IDbConnection db = connectionFactory.Create())
+            {
+                // 1. Count all pending applications belonging to this HOD.
+                const string countSql = @"
+                    SELECT COUNT(1)
+                    FROM dbo.Members m
+                    INNER JOIN [dbo].[fnHOD_Staff_Get](null) h
+                        ON m.NRIC COLLATE Latin1_General_CI_AI = h.[staff ic]
+                    WHERE m.ApplicationStatus = 'Pending for Verification'
+                      AND h.[hod ic] = @HodNric;";
+
+                int totalRecords = db.ExecuteScalar<int>(
+                    countSql,
+                    new { HodNric = hodNric });
+
+                // 2. Retrieve only the records for the selected page.
+                const string dataSql = @"
+                    SELECT
+                        m.*,
+                        ms.MembershipId,
+                        ms.MembershipNumber,
+                        ms.MembershipStatus,
+                        mt.TermStatus AS CurrentTermStatus
+                    FROM dbo.Members m
+                    INNER JOIN [dbo].[fnHOD_Staff_Get](null) h
+                        ON m.NRIC COLLATE Latin1_General_CI_AI = h.[staff ic]
+                    LEFT JOIN dbo.Memberships ms
+                        ON m.MemberId = ms.MemberId
+                    LEFT JOIN dbo.MembershipTerms mt
+                        ON ms.MembershipId = mt.MembershipId
+                        AND mt.MembershipYear = YEAR(GETDATE())
+                    WHERE m.ApplicationStatus = 'Pending for Verification'
+                      AND h.[hod ic] = @HodNric
+                    ORDER BY m.ApplicationDate ASC, m.MemberId ASC
+                    OFFSET @Offset ROWS
+                    FETCH NEXT @PageSize ROWS ONLY;";
+
+                var members = db.Query<Member>(dataSql, new
+                {
+                    HodNric = hodNric,
+                    Offset = (page - 1) * pageSize,
+                    PageSize = pageSize
+                }).ToList();
+
+                // 3. Calculate the total number of pages.
+                int totalPages = (int)Math.Ceiling(
+                    (double)totalRecords / pageSize);
+
+                // 4. Return the paginated result.
+                return new PendingReviewViewModel
+                {
+                    Members = members,
+                    CurrentPage = page,
+                    TotalPages = totalPages,
+                    TotalRecords = totalRecords,
+                    PageSize = pageSize
+                };
+            }
+        }
+
         public bool VerifyByDeptHead(int memberId, string expectedDepartment, string changedBy)
         {
             const string sql = @"

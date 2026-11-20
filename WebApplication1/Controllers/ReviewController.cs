@@ -32,12 +32,19 @@ namespace CrownTowersClub.Controllers
            ============================================================ */
 
         [HttpGet]
-        public ActionResult Pending()
+        public ActionResult Pending(int page = 1)
         {
-            if (!IsDepartmentHead()) return RedirectToAction("Index", "Home");
+            if (!IsDepartmentHead())
+                return RedirectToAction("Index", "Home");
 
-            var rows = repository.GetPendingByHod(CurrentUser.NRIC);
-            return View(rows);
+            const int pageSize = 15;
+
+            var viewModel = repository.GetPendingByHodPaged(
+                CurrentUser.NRIC,
+                page,
+                pageSize);
+
+            return View(viewModel);
         }
 
         [HttpGet]
