@@ -106,7 +106,7 @@
 
 
                         <td data-label="Application Status">
-                            <span class="status-pill status-pill--@(m.ApplicationStatus == CrownTowersClub.Domain.ApplicationStatus.Approved ? "approved" : m.ApplicationStatus == CrownTowersClub.Domain.ApplicationStatus.Draft ? "draft" : m.ApplicationStatus.Contains("Rejected") ? "rejected" : m.ApplicationStatus == CrownTowersClub.Domain.ApplicationStatus.ReturnedForCorrection ? "returned" : "pending")">
+                            <span class="status-pill status-pill--@(m.ApplicationStatus == CrownTowersClub.Domain.ApplicationStatus.Approved ? "approved" : m.ApplicationStatus == CrownTowersClub.Domain.ApplicationStatus.VerifiedByDeptHead ? "verified" : m.ApplicationStatus == CrownTowersClub.Domain.ApplicationStatus.Draft ? "draft" : m.ApplicationStatus.Contains("Rejected") ? "rejected" : m.ApplicationStatus == CrownTowersClub.Domain.ApplicationStatus.ReturnedForCorrection ? "returned" : "pending")">
                                 @m.ApplicationStatus
                             </span>
                         </td>

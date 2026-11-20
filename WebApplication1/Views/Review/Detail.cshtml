@@ -40,6 +40,22 @@
 </section>
 
 <div class="detail-stack">
+
+    @if (!string.IsNullOrWhiteSpace(member.RejectionReason))
+    {
+        <section class="card card--theme-red">
+            <h2 class="headline-md section-title">Rejection</h2>
+            <dl class="detail-grid">
+                <dt>Reason</dt>
+                <dd>@member.RejectionReason</dd>
+                <dt>Rejected By</dt>
+                <dd>@member.RejectedBy</dd>
+                <dt>Rejected At</dt>
+                <dd>@(member.RejectedAt.HasValue ? member.RejectedAt.Value.ToString("yyyy-MM-dd HH:mm") : "")</dd>
+            </dl>
+        </section>
+    }
+
     <!-- Personal Details -->
     <section class="card card--theme-blue">
 
@@ -149,7 +165,7 @@
                     </thead>
                     <tbody>
                         @foreach (var term in Model.Terms)
-                    {
+                        {
                             <tr>
                                 <td><strong>@term.MembershipYear</strong></td>
                                 <td>@term.StartDate.ToString("yyyy-MM-dd")</td>
@@ -183,7 +199,7 @@
                     </thead>
                     <tbody>
                         @foreach (var p in Model.Payments)
-                    {
+                        {
                             <tr>
                                 <td><strong>@p.ReceiptNumber</strong></td>
                                 <td>@p.PaymentDate.ToString("yyyy-MM-dd")</td>
@@ -221,21 +237,6 @@
         </section>
     }
 
-    @if (!string.IsNullOrWhiteSpace(member.RejectionReason))
-    {
-        <section class="card card--theme-red">
-            <h2 class="headline-md section-title">Rejection</h2>
-            <dl class="detail-grid">
-                <dt>Reason</dt>
-                <dd>@member.RejectionReason</dd>
-                <dt>Rejected By</dt>
-                <dd>@member.RejectedBy</dd>
-                <dt>Rejected At</dt>
-                <dd>@(member.RejectedAt.HasValue ? member.RejectedAt.Value.ToString("yyyy-MM-dd HH:mm") : "")</dd>
-            </dl>
-        </section>
-    }
-
     <!-- Cancellation Card -->
     @if (!string.IsNullOrWhiteSpace(member.CancellationReason))
     {
@@ -263,7 +264,7 @@
 
     @if (canCommittee)
     {
-    <!-- Only show Approve/Reject if the application is still in 'Verified' status -->
+        <!-- Only show Approve/Reject if the application is still in 'Verified' status -->
         if (member.ApplicationStatus == CrownTowersClub.Domain.ApplicationStatus.VerifiedByDeptHead)
         {
             <section class="card">
@@ -275,7 +276,7 @@
             </section>
         }
 
-    <!-- Show Cancel Membership if the member is Active or Suspended -->
+        <!-- Show Cancel Membership if the member is Active or Suspended -->
         if (member.MembershipStatus == "Active" || member.MembershipStatus == "Suspended")
         {
             <section class="card" style="border-left: 4px solid var(--danger); margin-top: 24px;">
