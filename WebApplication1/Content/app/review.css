@@ -806,6 +806,92 @@
     }
 }
 
+/* ============================================================
+   Payment Dashboard - Desktop Table Layout
+   ============================================================ */
+
+@media (min-width: 768px) {
+
+    .queue-table--payment-pending,
+    .queue-table--payment-history {
+        table-layout: fixed;
+    }
+
+    /* Pending Payments column widths */
+    .queue-table--payment-pending th:nth-child(1),
+    .queue-table--payment-pending td:nth-child(1) {
+        width: 16%;
+    }
+
+    .queue-table--payment-pending th:nth-child(2),
+    .queue-table--payment-pending td:nth-child(2) {
+        width: 30%;
+    }
+
+    .queue-table--payment-pending th:nth-child(3),
+    .queue-table--payment-pending td:nth-child(3) {
+        width: 10%;
+    }
+
+    .queue-table--payment-pending th:nth-child(4),
+    .queue-table--payment-pending td:nth-child(4) {
+        width: 16%;
+    }
+
+    .queue-table--payment-pending th:nth-child(5),
+    .queue-table--payment-pending td:nth-child(5) {
+        width: 28%;
+    }
+
+    /* Payment History column widths */
+    .queue-table--payment-history th:nth-child(1),
+    .queue-table--payment-history td:nth-child(1) {
+        width: 15%;
+    }
+
+    .queue-table--payment-history th:nth-child(2),
+    .queue-table--payment-history td:nth-child(2) {
+        width: 15%;
+    }
+
+    .queue-table--payment-history th:nth-child(3),
+    .queue-table--payment-history td:nth-child(3) {
+        width: 20%;
+    }
+
+    .queue-table--payment-history th:nth-child(4),
+    .queue-table--payment-history td:nth-child(4) {
+        width: 8%;
+    }
+
+    .queue-table--payment-history th:nth-child(5),
+    .queue-table--payment-history td:nth-child(5) {
+        width: 13%;
+    }
+
+    .queue-table--payment-history th:nth-child(6),
+    .queue-table--payment-history td:nth-child(6) {
+        width: 13%;
+    }
+
+    .queue-table--payment-history th:nth-child(7),
+    .queue-table--payment-history td:nth-child(7) {
+        width: 16%;
+    }
+
+    /* Keep short values together */
+    .queue-table--payment-pending td:nth-child(1),
+    .queue-table--payment-pending td:nth-child(3),
+    .queue-table--payment-pending td:nth-child(4),
+    .queue-table--payment-history td:nth-child(1),
+    .queue-table--payment-history td:nth-child(2),
+    .queue-table--payment-history td:nth-child(4),
+    .queue-table--payment-history td:nth-child(5) {
+        white-space: nowrap;
+    }
+
+}
+
 
 /* ============================================================
    Payment Dashboard - Mobile Table Layout
