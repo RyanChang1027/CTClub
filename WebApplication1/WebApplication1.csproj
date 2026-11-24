@@ -138,6 +138,7 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\DevSessionController.cs" />
+    <Compile Include="Controllers\EventsController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\MemberController.cs" />
     <Compile Include="Controllers\ReviewController.cs" />
@@ -172,6 +173,7 @@
   <ItemGroup>
     <Content Include="Content\app\app-shell.css" />
     <Content Include="Content\app\dashboard.css" />
+    <Content Include="Content\app\events.css" />
     <Content Include="Content\app\images\chitchat-whatsapp.png" />
     <Content Include="Content\app\images\krctk-logo.png" />
     <Content Include="Content\app\images\[ori]krctk.png" />
@@ -253,6 +255,7 @@
     <Content Include="Views\Training\Form.cshtml" />
     <Content Include="Views\Training\Api.cshtml" />
     <Content Include="Views\Member\Scan.cshtml" />
+    <Content Include="Views\Events\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
