@@ -18,7 +18,8 @@ namespace CrownTowersClub
                     "~/Content/app/review.css",
                     "~/Content/app/app-shell.css",
                     "~/Content/app/membership-card.css",
-                    "~/Content/app/dashboard.css"));
+                    "~/Content/app/dashboard.css",
+                    "~/Content/app/events.css"));
 
             bundles.Add(new ScriptBundle("~/bundles/vendor-js")
                 .Include(

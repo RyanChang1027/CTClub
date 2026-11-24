@@ -23,6 +23,9 @@
 
     bool isDirectory =
         currentController == "Review" && currentAction == "Directory";
+
+    bool isEvents =
+        currentController == "Events" && currentAction == "Index";
 }
 
 <aside class="app-sidebar" id="app-sidebar" aria-label="Main sidebar" tabindex="-1">
@@ -133,6 +136,21 @@
 
                     <span class="material-symbols-outlined">person_add</span>
                     <span>Manual Form</span>
+                </a>
+
+            </div>
+
+            <!-- EVENT LINKS -->
+            <div class="sidebar-section">
+
+                <span class="sidebar-section-title">EVENT</span>
+
+                <a href="@Url.Action("Index", "Events")"
+                   class="sidebar-link @(isEvents ? "is-active" : "")"
+                   @(isEvents ? "aria-current=page" : "")>
+
+                    <span class="material-symbols-outlined">event</span>
+                    <span>Event Management</span>
                 </a>
 
             </div>

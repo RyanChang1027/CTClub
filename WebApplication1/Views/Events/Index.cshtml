@@ -1,0 +1,82 @@
+﻿@{ Layout = "~/Views/Shared/_Layout.cshtml";
+                ViewBag.Title = "Event Management"; }
+
+<section class="hero events-hero">
+
+    <div>
+        <h1 class="display-lg">Event Management</h1>
+
+        <p class="body-lg">
+            Manage and organise Crown Towers Club events.
+        </p>
+    </div>
+
+    <button type="button"
+            class="btn btn--primary"
+            disabled>
+        <span class="material-symbols-outlined">add</span>
+        Create Event
+    </button>
+
+</section>
+
+<section class="card events-card">
+
+    <div class="events-toolbar">
+
+        <div class="events-search">
+
+            <span class="material-symbols-outlined">
+                search
+            </span>
+
+            <input type="search"
+                   class="form-input"
+                   placeholder="Search by event name or location..."
+                   disabled />
+
+        </div>
+
+    </div>
+
+    <div class="table-scroll">
+
+        <table class="queue-table events-table">
+
+            <thead>
+                <tr>
+                    <th>Picture</th>
+                    <th>Event Name</th>
+                    <th>Venue / Location</th>
+                    <th>Event Date</th>
+                    <th>Time Schedule</th>
+                    <th class="events-action-heading">Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                <tr>
+                    <td colspan="6" class="events-empty-cell">
+
+                        <span class="material-symbols-outlined">
+                            event_busy
+                        </span>
+
+                        <strong>No events to display yet.</strong>
+
+                        <span>
+                            Your club events will appear here
+                            once they have been added.
+                        </span>
+
+                    </td>
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</section>
