@@ -1,0 +1,233 @@
+﻿@model CrownTowersClub.ViewModels.EventCreateViewModel
+
+@{
+    ViewBag.Title = "Create Event";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<section class="hero events-hero">
+    <div>
+        <h1 class="display-lg">Create Event</h1>
+        <p class="body-lg">Set up a new Crown Towers Club event.</p>
+    </div>
+
+    <a href="@Url.Action("Index", "Events")" class="btn btn--secondary">
+        Back to Events
+    </a>
+</section>
+
+@using (Html.BeginForm(
+    "Create",
+    "Events",
+    FormMethod.Post,
+    new { enctype = "multipart/form-data", @class = "form-col" }))
+{
+    @Html.AntiForgeryToken()
+
+    @Html.ValidationSummary(false, "", new { @class = "error" })
+
+    <!-- Event Information -->
+    <section class="card">
+        <h2 class="headline-md section-title">Event Information</h2>
+
+        <div class="form-grid">
+
+            <div class="field--full">
+                @Html.LabelFor(m => m.EventName, "Event Name",
+                    new { @class = "form-label" })
+
+                @Html.TextBoxFor(m => m.EventName, new
+                {
+                    @class = "form-input",
+                    placeholder = "Enter event name"
+                })
+
+                @Html.ValidationMessageFor(m => m.EventName, "",
+                    new { @class = "error" })
+            </div>
+
+            <div class="field--full">
+                @Html.LabelFor(m => m.Description, "Description",
+                    new { @class = "form-label" })
+
+                @Html.TextAreaFor(m => m.Description, new
+                {
+                    @class = "form-textarea",
+                    rows = 4,
+                    placeholder = "Describe the event..."
+                })
+
+                @Html.ValidationMessageFor(m => m.Description, "",
+                    new { @class = "error" })
+            </div>
+
+            <div>
+                @Html.LabelFor(m => m.EventType, "Event Type",
+                    new { @class = "form-label" })
+
+                @Html.DropDownListFor(
+                    m => m.EventType,
+                    Model.EventTypes,
+                    "-- Select Event Type --",
+                    new { @class = "form-select", id = "EventType" })
+
+                @Html.ValidationMessageFor(m => m.EventType, "",
+                    new { @class = "error" })
+            </div>
+
+            <div id="customEventTypeGroup" style="display:none;">
+                @Html.LabelFor(m => m.CustomEventType, "Custom Event Type",
+                    new { @class = "form-label" })
+
+                @Html.TextBoxFor(m => m.CustomEventType, new
+                {
+                    @class = "form-input",
+                    placeholder = "Enter custom event type"
+                })
+
+                @Html.ValidationMessageFor(m => m.CustomEventType, "",
+                    new { @class = "error" })
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Event Timeline -->
+    <section class="card">
+        <h2 class="headline-md section-title">Event Timeline</h2>
+
+        <div class="form-grid">
+
+            <div>
+                @Html.LabelFor(m => m.StartDate, "Start Date",
+                    new { @class = "form-label" })
+
+                @Html.TextBoxFor(m => m.StartDate, "{0:yyyy-MM-dd}", new
+                {
+                    @class = "form-input",
+                    type = "date"
+                })
+
+                @Html.ValidationMessageFor(m => m.StartDate, "",
+                    new { @class = "error" })
+            </div>
+
+            <div>
+                @Html.LabelFor(m => m.StartTime, "Start Time",
+                    new { @class = "form-label" })
+
+                @Html.TextBoxFor(m => m.StartTime, "{0:hh\\:mm}", new
+                {
+                    @class = "form-input",
+                    type = "time"
+                })
+
+                @Html.ValidationMessageFor(m => m.StartTime, "",
+                    new { @class = "error" })
+            </div>
+
+            <div>
+                @Html.LabelFor(m => m.EndDate, "End Date",
+                    new { @class = "form-label" })
+
+                @Html.TextBoxFor(m => m.EndDate, "{0:yyyy-MM-dd}", new
+                {
+                    @class = "form-input",
+                    type = "date"
+                })
+
+                @Html.ValidationMessageFor(m => m.EndDate, "",
+                    new { @class = "error" })
+            </div>
+
+            <div>
+                @Html.LabelFor(m => m.EndTime, "End Time",
+                    new { @class = "form-label" })
+
+                @Html.TextBoxFor(m => m.EndTime, "{0:hh\\:mm}", new
+                {
+                    @class = "form-input",
+                    type = "time"
+                })
+
+                @Html.ValidationMessageFor(m => m.EndTime, "",
+                    new { @class = "error" })
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Venue -->
+    <section class="card">
+        <h2 class="headline-md section-title">Venue</h2>
+
+        <div class="form-grid">
+            <div class="field--full">
+                @Html.LabelFor(m => m.VenueId, "Event Venue",
+                    new { @class = "form-label" })
+
+                @Html.DropDownListFor(
+                    m => m.VenueId,
+                    Model.Venues,
+                    "-- Select Venue --",
+                    new { @class = "form-select" })
+
+                @Html.ValidationMessageFor(m => m.VenueId, "",
+                    new { @class = "error" })
+            </div>
+        </div>
+    </section>
+
+    <!-- Event Picture -->
+    <section class="card">
+        <h2 class="headline-md section-title">Event Picture</h2>
+
+        <div class="form-grid">
+            <div class="field--full">
+                <label for="EventImage" class="form-label">
+                    Upload Event Poster or Cover
+                </label>
+
+                <input type="file"
+                       id="EventImage"
+                       name="EventImage"
+                       class="form-input"
+                       accept="image/*" />
+
+                <small class="form-label">
+                    Leave this empty to use the default event image.
+                </small>
+            </div>
+        </div>
+    </section>
+
+    <div class="actions">
+        <a href="@Url.Action("Index", "Events")"
+           class="btn btn--outline">
+            Cancel
+        </a>
+
+        <button type="submit" class="btn btn--primary">
+            Create Event
+        </button>
+    </div>
+}
+
+<script>
+    (function () {
+        var eventType = document.getElementById("EventType");
+        var customGroup = document.getElementById("customEventTypeGroup");
+
+        if (!eventType || !customGroup) {
+            return;
+        }
+
+        function updateCustomEventType() {
+            customGroup.style.display =
+                eventType.value === "Other" ? "block" : "none";
+        }
+
+        eventType.addEventListener("change", updateCustomEventType);
+        updateCustomEventType();
+    })();
+</script>

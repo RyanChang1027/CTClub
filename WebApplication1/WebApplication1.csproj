@@ -163,6 +163,7 @@
     <Compile Include="ViewModels\CorporateEmployee.cs" />
     <Compile Include="Models\Member.cs" />
     <Compile Include="ViewModels\DirectoryViewModel.cs" />
+    <Compile Include="ViewModels\EventCreateViewModel.cs" />
     <Compile Include="ViewModels\EventIndexViewModel.cs" />
     <Compile Include="ViewModels\MemberDetailViewModel.cs" />
     <Compile Include="ViewModels\MemberFormDto.cs" />
@@ -261,6 +262,7 @@
     <Content Include="Views\Training\Api.cshtml" />
     <Content Include="Views\Member\Scan.cshtml" />
     <Content Include="Views\Events\Index.cshtml" />
+    <Content Include="Views\Events\Create.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
