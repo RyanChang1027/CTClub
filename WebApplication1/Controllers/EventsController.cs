@@ -1,12 +1,21 @@
 ﻿using System.Web.Mvc;
 using CrownTowersClub.Infrastructure.Session;
+using CrownTowersClub.Repositories;
+using CrownTowersClub.ViewModels;
 
 namespace CrownTowersClub.Controllers
 {
     public sealed class EventsController : Controller
     {
+        private readonly IEventRepository eventRepository;
+
+        public EventsController(IEventRepository eventRepository)
+        {
+            this.eventRepository = eventRepository;
+        }
+
         [HttpGet]
-        public ActionResult Index()
+        public ActionResult Index(string searchTerm)
         {
             var user = Session[DevSessionKeys.User] as DevSessionUser;
 
@@ -15,7 +24,13 @@ namespace CrownTowersClub.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            return View();
+            var viewModel = new EventIndexViewModel
+            {
+                Events = eventRepository.GetAll(searchTerm),
+                SearchTerm = searchTerm
+            };
+
+            return View(viewModel);
         }
     }
 }

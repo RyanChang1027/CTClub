@@ -1,4 +1,6 @@
-﻿@{ Layout = "~/Views/Shared/_Layout.cshtml";
+﻿@model CrownTowersClub.ViewModels.EventIndexViewModel
+
+@{ Layout = "~/Views/Shared/_Layout.cshtml";
                 ViewBag.Title = "Event Management"; }
 
 <section class="hero events-hero">
@@ -24,18 +26,18 @@
 
     <div class="events-toolbar">
 
-        <div class="events-search">
+        @using (Html.BeginForm("Index", "Events", FormMethod.Get,
+            new { @class = "events-search" }))
+        {
+<span class="material-symbols-outlined">
+    search
+</span>
 
-            <span class="material-symbols-outlined">
-                search
-            </span>
-
-            <input type="search"
-                   class="form-input"
-                   placeholder="Search by event name or location..."
-                   disabled />
-
-        </div>
+                <input type="search"
+                       name="searchTerm"
+                       class="form-input"
+                       value="@Model.SearchTerm"
+                       placeholder="Search by event name or location..." />}
 
     </div>
 
@@ -56,22 +58,85 @@
 
             <tbody>
 
-                <tr>
-                    <td colspan="6" class="events-empty-cell">
+                @if (Model.Events != null && Model.Events.Count > 0)
+                {
+                    foreach (var eventItem in Model.Events)
+                    {
+    <tr>
+        <td>
+            @if (!string.IsNullOrWhiteSpace(eventItem.EventImagePath))
+            {
+<img src="@Url.Content(eventItem.EventImagePath)"
+     alt="@eventItem.EventName"
+     class="events-thumbnail" /> }
+                    else
+                    {
+<div class="events-thumbnail events-thumbnail--placeholder">
+    <span class="material-symbols-outlined">
+        event
+    </span>
+</div>}
+        </td>
 
-                        <span class="material-symbols-outlined">
-                            event_busy
-                        </span>
+        <td>
+            <strong>@eventItem.EventName</strong>
+        </td>
 
-                        <strong>No events to display yet.</strong>
+        <td>
+            @(eventItem.VenueName ?? "Venue unavailable")
+        </td>
 
-                        <span>
-                            Your club events will appear here
-                            once they have been added.
-                        </span>
+        <td>
+            @eventItem.StartDateTime.ToString("dd MMM yyyy")
 
-                    </td>
-                </tr>
+            @if (eventItem.StartDateTime.Date != eventItem.EndDateTime.Date)
+            {
+<span>
+    – @eventItem.EndDateTime.ToString("dd MMM yyyy")
+</span>}
+        </td>
+
+        <td>
+            @eventItem.StartDateTime.ToString("h:mm tt")
+            –
+            @eventItem.EndDateTime.ToString("h:mm tt")
+        </td>
+
+        <td class="events-action-heading">
+            <button type="button"
+                    class="btn btn--secondary"
+                    disabled
+                    title="Event details will be available in the next step">
+                <span class="material-symbols-outlined">
+                    visibility
+                </span>
+            </button>
+        </td>
+    </tr> }
+                }
+                else
+                {
+    <tr>
+        <td colspan="6" class="events-empty-cell">
+
+            <span class="material-symbols-outlined">
+                event_busy
+            </span>
+
+            <strong>
+                @(string.IsNullOrWhiteSpace(Model.SearchTerm)
+                                    ? "No events to display yet."
+                                    : "No matching events found.")
+            </strong>
+
+            <span>
+                @(string.IsNullOrWhiteSpace(Model.SearchTerm)
+                                    ? "Your club events will appear here once they have been added."
+                                    : "Try searching with a different event name or location.")
+            </span>
+
+        </td>
+    </tr>}
 
             </tbody>
 

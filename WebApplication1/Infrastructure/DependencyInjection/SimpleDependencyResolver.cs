@@ -49,6 +49,18 @@ namespace CrownTowersClub.Infrastructure.DependencyInjection
                     new MemberRepository(connectionFactory));
             }
 
+            if (serviceType == typeof(EventsController))
+            {
+                return new EventsController(
+                    new EventRepository(
+                        new SqlConnectionFactory()));
+            }
+
+            if (serviceType == typeof(IEventRepository))
+            {
+                return new EventRepository(
+                    new SqlConnectionFactory());
+            }
 
             if (serviceType == typeof(IMemberRepository))
             {
