@@ -24,11 +24,9 @@ namespace CrownTowersClub.Models
         [StringLength(100)]
         public string CustomEventType { get; set; }
 
-        [Required]
-        public DateTime StartDateTime { get; set; }
+        public DateTime? StartDateTime { get; set; }
 
-        [Required]
-        public DateTime EndDateTime { get; set; }
+        public DateTime? EndDateTime { get; set; }
 
         public string VenueDetails { get; set; }
 

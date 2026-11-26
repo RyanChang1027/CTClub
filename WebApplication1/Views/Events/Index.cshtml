@@ -86,19 +86,52 @@
         </td>
 
         <td>
-            @eventItem.StartDateTime.ToString("dd MMM yyyy")
-
-            @if (eventItem.StartDateTime.Date != eventItem.EndDateTime.Date)
+            @if (eventItem.StartDateTime.HasValue)
             {
-<span>
-    – @eventItem.EndDateTime.ToString("dd MMM yyyy")
-</span>}
+                @eventItem.StartDateTime.Value.ToString("dd MMM yyyy")
+
+                if (eventItem.EndDateTime.HasValue &&
+                    eventItem.StartDateTime.Value.Date != eventItem.EndDateTime.Value.Date)
+                {
+                    <span>
+                        – @eventItem.EndDateTime.Value.ToString("dd MMM yyyy")
+                    </span>
+                }
+            }
+            else if (eventItem.EndDateTime.HasValue)
+            {
+                <span>
+                    Ends @eventItem.EndDateTime.Value.ToString("dd MMM yyyy")
+                </span>
+            }
+            else
+            {
+                <span>Not scheduled</span>
+            }
         </td>
 
         <td>
-            @eventItem.StartDateTime.ToString("h:mm tt")
-            –
-            @eventItem.EndDateTime.ToString("h:mm tt")
+            @if (eventItem.StartDateTime.HasValue)
+            {
+                @eventItem.StartDateTime.Value.ToString("h:mm tt")
+            }
+
+            @if (eventItem.StartDateTime.HasValue &&
+                 eventItem.EndDateTime.HasValue)
+            {
+                <span> – </span>
+            }
+
+            @if (eventItem.EndDateTime.HasValue)
+            {
+                @eventItem.EndDateTime.Value.ToString("h:mm tt")
+            }
+
+            @if (!eventItem.StartDateTime.HasValue &&
+                 !eventItem.EndDateTime.HasValue)
+            {
+                <span>Not scheduled</span>
+            }
         </td>
 
         <td class="events-action-heading">

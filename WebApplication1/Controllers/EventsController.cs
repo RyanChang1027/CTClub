@@ -61,7 +61,7 @@ namespace CrownTowersClub.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(EventCreateViewModel viewModel)
+        public ActionResult Create(EventCreateViewModel viewModel, string submitAction)
         {
             var user = Session[DevSessionKeys.User] as DevSessionUser;
 
@@ -73,6 +73,19 @@ namespace CrownTowersClub.Controllers
             if (viewModel == null)
             {
                 return RedirectToAction("Create");
+            }
+
+            // Determine whether the user is saving a draft.
+            bool isSavingDraft = submitAction == "SaveDraft";
+
+            // Drafts do not require dates, times or a venue.
+            if (isSavingDraft)
+            {
+                ModelState.Remove("StartDate");
+                ModelState.Remove("StartTime");
+                ModelState.Remove("EndDate");
+                ModelState.Remove("EndTime");
+                ModelState.Remove("VenueKey");
             }
 
             // Validate the selected event type.
@@ -114,13 +127,7 @@ namespace CrownTowersClub.Controllers
             // Find and validate the selected active venue.
             VenueOption selectedVenue = null;
 
-            if (string.IsNullOrWhiteSpace(viewModel.VenueKey))
-            {
-                ModelState.AddModelError(
-                    "VenueKey",
-                    "Please select a venue.");
-            }
-            else
+            if (!string.IsNullOrWhiteSpace(viewModel.VenueKey))
             {
                 selectedVenue = venueProvider.GetActiveVenues()
                     .FirstOrDefault(venue =>
@@ -136,10 +143,16 @@ namespace CrownTowersClub.Controllers
                         "Please select a valid active venue.");
                 }
             }
+            else if (!isSavingDraft)
+            {
+                ModelState.AddModelError(
+                    "VenueKey",
+                    "Please select a venue.");
+            }
 
             // Combine the date and time fields.
-            DateTime startDateTime = DateTime.MinValue;
-            DateTime endDateTime = DateTime.MinValue;
+            DateTime? startDateTime = null;
+            DateTime? endDateTime = null;
 
             if (viewModel.StartDate.HasValue &&
                 viewModel.StartTime.HasValue)
@@ -155,9 +168,9 @@ namespace CrownTowersClub.Controllers
                     .Add(viewModel.EndTime.Value);
             }
 
-            if (startDateTime != DateTime.MinValue &&
-                endDateTime != DateTime.MinValue &&
-                endDateTime <= startDateTime)
+            if (startDateTime.HasValue &&
+                endDateTime.HasValue &&
+                endDateTime.Value <= startDateTime.Value)
             {
                 ModelState.AddModelError(
                     "EndDate",
@@ -191,7 +204,9 @@ namespace CrownTowersClub.Controllers
                 CustomEventType = viewModel.CustomEventType,
                 StartDateTime = startDateTime,
                 EndDateTime = endDateTime,
-                VenueDetails = JsonConvert.SerializeObject(selectedVenue),
+                VenueDetails = selectedVenue == null
+                    ? null
+                    : JsonConvert.SerializeObject(selectedVenue),
                 EventImagePath = null
             };
 
@@ -200,8 +215,9 @@ namespace CrownTowersClub.Controllers
                 // Insert() automatically saves the event as Draft.
                 int eventId = eventRepository.Insert(eventItem);
 
-                TempData["SuccessMessage"] =
-                    "Event created successfully!";
+                TempData["SuccessMessage"] = isSavingDraft
+                    ? "Event draft saved successfully!"
+                    : "Event created successfully!";
 
                 return RedirectToAction("Index");
             }
