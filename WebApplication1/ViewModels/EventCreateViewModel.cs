@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Web;
 using System.Web.Mvc;
+using CrownTowersClub.Models;
 
 namespace CrownTowersClub.ViewModels
 {
@@ -41,5 +42,7 @@ namespace CrownTowersClub.ViewModels
         public IEnumerable<SelectListItem> EventTypes { get; set; }
 
         public IEnumerable<SelectListItem> Venues { get; set; }
+
+        public IEnumerable<VenueOption> VenueOptions { get; set; }
     }
 }

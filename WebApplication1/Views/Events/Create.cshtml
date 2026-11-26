@@ -158,79 +158,137 @@
     </section>
 
     <!-- Venue -->
-    <section class="card">
-        <h2 class="headline-md section-title">Venue</h2>
+                    <section class="card">
+                        <h2 class="headline-md section-title">Venue</h2>
 
-        <div class="form-grid">
-            <div class="field--full">
-                @Html.LabelFor(m => m.VenueKey, "Event Venue", new { @class = "form-label" })
-                @Html.DropDownListFor(m => m.VenueKey, Model.Venues, "-- Select Venue --", new { @class = "form-select" })
-                @Html.ValidationMessageFor(m => m.VenueKey, "", new { @class = "error" })
-            </div>
-        </div>
-    </section>
+                        <div class="form-grid">
+                            <div class="field--full">
+                                @Html.LabelFor(m => m.VenueKey, "Event Venue", new { @class = "form-label" })
 
-    <!-- Event Picture -->
-    <section class="card">
-        <h2 class="headline-md section-title">Event Picture</h2>
+                                @Html.DropDownListFor(
+                                    m => m.VenueKey,
+                                    Model.Venues,
+                                    "-- Select Venue --",
+                                    new { @class = "form-select", id = "VenueKey" }
+                                )
 
-        <div class="form-grid">
-            <div class="field--full">
-                <label for="EventImage" class="form-label">
-                    Upload Event Poster or Cover
-                </label>
+                                @Html.ValidationMessageFor(m => m.VenueKey, "", new { @class = "error" })
+                            </div>
 
-                <input type="file"
-                       id="EventImage"
-                       name="EventImage"
-                       class="form-input"
-                       accept="image/*" />
+                            <div class="field--full" id="venueAddressGroup" style="display: none;">
+                                <label class="form-label" for="VenueAddress">Venue Address</label>
+                                <div
+                                    id="VenueAddress"
+                                    class="form-input"
+                                    style="pointer-events: none; cursor: default;"
+                                    aria-readonly="true">
+                                </div>
+                            </div>
+                        </div>
+                    </section>
 
-                <small class="form-label">
-                    Leave this empty to use the default event image.
-                </small>
-            </div>
-        </div>
-    </section>
+                    <!-- Event Picture -->
+                    <section class="card">
+                        <h2 class="headline-md section-title">Event Picture</h2>
 
-    <div class="actions">
-        <a href="@Url.Action("Index", "Events")"
-           class="btn btn--outline">
-            Cancel
-        </a>
+                        <div class="form-grid">
+                            <div class="field--full">
+                                <label for="EventImage" class="form-label">
+                                    Upload Event Poster or Cover
+                                </label>
 
-        <button type="submit"
-                name="submitAction"
-                value="SaveDraft"
-                formnovalidate
-                class="btn btn--secondary">
-            Save Draft
-        </button>
+                                <input type="file"
+                                       id="EventImage"
+                                       name="EventImage"
+                                       class="form-input"
+                                       accept="image/*" />
 
-        <button type="submit"
-                name="submitAction"
-                value="CreateEvent"
-                class="btn btn--primary">
-            Create Event
-        </button>
-    </div>
-}
+                                <small class="form-label">
+                                    Leave this empty to use the default event image.
+                                </small>
+                            </div>
+                        </div>
+                    </section>
+
+                    <div class="actions">
+                        <a href="@Url.Action("Index", "Events")"
+                           class="btn btn--outline">
+                            Cancel
+                        </a>
+
+                        <button type="submit"
+                                name="submitAction"
+                                value="SaveDraft"
+                                formnovalidate
+                                class="btn btn--secondary">
+                            Save Draft
+                        </button>
+
+                        <button type="submit"
+                                name="submitAction"
+                                value="CreateEvent"
+                                class="btn btn--primary">
+                            Create Event
+                        </button>
+                    </div>
+                }
 
 <script>
     (function () {
+        // Event Type: Show or hide the custom event type field.
         var eventType = document.getElementById("EventType");
         var customGroup = document.getElementById("customEventTypeGroup");
 
-        if (!eventType || !customGroup) {
-            return;
+        if (eventType && customGroup) {
+            function updateCustomEventType() {
+                customGroup.style.display =
+                    eventType.value === "Other" ? "block" : "none";
+            }
+
+            eventType.addEventListener("change", updateCustomEventType);
+            updateCustomEventType();
         }
 
-        function updateCustomEventType() {
-            customGroup.style.display =
-                eventType.value === "Other" ? "block" : "none";
-        }
+        // Venue: Load the venue information supplied by the controller.
+        var venueOptions = @Html.Raw(
+            Newtonsoft.Json.JsonConvert.SerializeObject(
+                Model.VenueOptions,
+                new Newtonsoft.Json.JsonSerializerSettings
+                {
+                    StringEscapeHandling = Newtonsoft.Json.StringEscapeHandling.EscapeHtml
+                }
+            )
+        );
 
-        eventType.addEventListener("change", updateCustomEventType);
-        updateCustomEventType();
+        var venueSelect = document.getElementById("VenueKey");
+        var venueAddressGroup = document.getElementById("venueAddressGroup");
+        var venueAddressInput = document.getElementById("VenueAddress");
+
+        if (venueSelect && venueAddressGroup && venueAddressInput) {
+            function updateVenueAddress() {
+                var selectedVenue = null;
+
+                for (var i = 0; i < venueOptions.length; i++) {
+                    if (venueOptions[i].VenueKey === venueSelect.value) {
+                        selectedVenue = venueOptions[i];
+                        break;
+                    }
+                }
+
+                if (!selectedVenue) {
+                    venueAddressGroup.style.display = "none";
+                    venueAddressInput.textContent = "";
+                    return;
+                }
+
+                venueAddressInput.textContent = selectedVenue.VenueAddress || "";
+                venueAddressGroup.style.display = "block";
+            }
+
+            venueSelect.addEventListener("change", updateVenueAddress);
+
+            // Also display the address if a venue is already selected.
+            updateVenueAddress();
+        }
     })();
 </script>

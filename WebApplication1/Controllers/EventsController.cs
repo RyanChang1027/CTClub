@@ -252,6 +252,8 @@ namespace CrownTowersClub.Controllers
 
         private EventCreateViewModel BuildCreateViewModel()
         {
+            var venues = venueProvider.GetActiveVenues();
+
             return new EventCreateViewModel
             {
                 EventTypes = new List<SelectListItem>
@@ -262,13 +264,15 @@ namespace CrownTowersClub.Controllers
                     new SelectListItem { Value = "Other", Text = "Other" }
                 },
 
-                Venues = venueProvider.GetActiveVenues()
+                Venues = venues
                     .Select(venue => new SelectListItem
                     {
                         Value = venue.VenueKey,
                         Text = venue.VenueName
                     })
-                    .ToList()
+                    .ToList(),
+
+                VenueOptions = venues
             };
         }
     }
