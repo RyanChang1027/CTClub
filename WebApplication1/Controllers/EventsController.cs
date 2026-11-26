@@ -207,7 +207,8 @@ namespace CrownTowersClub.Controllers
                 VenueDetails = selectedVenue == null
                     ? null
                     : JsonConvert.SerializeObject(selectedVenue),
-                EventImagePath = null
+                EventImagePath = null,
+                ManualStatus = isSavingDraft ? "Draft" : null
             };
 
             try

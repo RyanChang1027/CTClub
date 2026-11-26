@@ -41,6 +41,38 @@ namespace CrownTowersClub.Models
         [StringLength(20)]
         public string ManualStatus { get; set; }
 
+        public string DisplayStatus
+        {
+            get
+            {
+                // Manual statuses always take priority.
+                if (ManualStatus == "Draft" || ManualStatus == "Cancelled")
+                {
+                    return ManualStatus;
+                }
+
+                // Cannot calculate an automatic status without both dates.
+                if (!StartDateTime.HasValue || !EndDateTime.HasValue)
+                {
+                    return "Unknown";
+                }
+
+                DateTime now = DateTime.Now;
+
+                if (now < StartDateTime.Value)
+                {
+                    return "Upcoming";
+                }
+
+                if (now >= EndDateTime.Value)
+                {
+                    return "Completed";
+                }
+
+                return "Ongoing";
+            }
+        }
+
         public DateTime CreatedAt { get; set; }
 
         public DateTime UpdatedAt { get; set; }
