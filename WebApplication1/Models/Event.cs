@@ -32,6 +32,8 @@ namespace CrownTowersClub.Models
 
         public string VenueName { get; set; }
 
+        public string VenueAddress { get; set; }
+
         public string VenueImagePath { get; set; }
 
         public string EventImagePath { get; set; }

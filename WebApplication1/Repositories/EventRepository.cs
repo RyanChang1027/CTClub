@@ -206,6 +206,7 @@ namespace CrownTowersClub.Repositories
                 return;
 
             eventItem.VenueName = venue.VenueName;
+            eventItem.VenueAddress = venue.VenueAddress;
             eventItem.VenueImagePath = venue.VenueImagePath;
         }
     }
