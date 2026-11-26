@@ -20,12 +20,6 @@ namespace CrownTowersClub.Repositories
         /// </summary>
         Event GetById(int eventId);
 
-        /// <summary>
-        /// Gets all active venues available for event creation.
-        /// </summary>
-        IReadOnlyList<EventVenue> GetActiveVenues();
-
-
         // Write Actions
 
         /// <summary>

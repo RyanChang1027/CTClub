@@ -163,17 +163,9 @@
 
         <div class="form-grid">
             <div class="field--full">
-                @Html.LabelFor(m => m.VenueId, "Event Venue",
-                    new { @class = "form-label" })
-
-                @Html.DropDownListFor(
-                    m => m.VenueId,
-                    Model.Venues,
-                    "-- Select Venue --",
-                    new { @class = "form-select" })
-
-                @Html.ValidationMessageFor(m => m.VenueId, "",
-                    new { @class = "error" })
+                @Html.LabelFor(m => m.VenueKey, "Event Venue", new { @class = "form-label" })
+                @Html.DropDownListFor(m => m.VenueKey, Model.Venues, "-- Select Venue --", new { @class = "form-select" })
+                @Html.ValidationMessageFor(m => m.VenueKey, "", new { @class = "error" })
             </div>
         </div>
     </section>

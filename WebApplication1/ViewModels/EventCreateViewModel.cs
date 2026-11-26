@@ -34,7 +34,7 @@ namespace CrownTowersClub.ViewModels
         public TimeSpan? EndTime { get; set; }
 
         [Required(ErrorMessage = "Please select a venue.")]
-        public int? VenueId { get; set; }
+        public string VenueKey { get; set; }
 
         public HttpPostedFileBase EventImage { get; set; }
 

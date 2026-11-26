@@ -4,6 +4,7 @@ using CrownTowersClub.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Web.Mvc;
+using CrownTowersClub.Services;
 
 namespace CrownTowersClub.Infrastructure.DependencyInjection
 {
@@ -53,7 +54,8 @@ namespace CrownTowersClub.Infrastructure.DependencyInjection
             {
                 return new EventsController(
                     new EventRepository(
-                        new SqlConnectionFactory()));
+                        new SqlConnectionFactory()),
+                    new VenueConfigurationProvider());
             }
 
             if (serviceType == typeof(IEventRepository))

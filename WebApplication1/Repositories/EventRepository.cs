@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using Dapper;
+using Newtonsoft.Json;
 using CrownTowersClub.Infrastructure.Data;
 using CrownTowersClub.Models;
 
@@ -27,20 +28,11 @@ namespace CrownTowersClub.Repositories
         public IReadOnlyList<Event> GetAll(string searchTerm)
         {
             const string sql = @"
-                SELECT
-                    e.*,
-                    v.VenueName,
-                    v.VenueImagePath
-                FROM dbo.Events e
-                INNER JOIN dbo.EventVenues v
-                    ON e.VenueId = v.VenueId
-                WHERE
-                    @SearchTerm IS NULL
-                    OR e.EventName LIKE '%' + @SearchTerm + '%'
-                    OR v.VenueName LIKE '%' + @SearchTerm + '%'
+                SELECT *
+                FROM dbo.Events
                 ORDER BY
-                    e.StartDateTime DESC,
-                    e.EventId DESC;";
+                    StartDateTime DESC,
+                    EventId DESC;";
 
             string search = string.IsNullOrWhiteSpace(searchTerm)
                 ? null
@@ -48,43 +40,49 @@ namespace CrownTowersClub.Repositories
 
             using (IDbConnection db = connectionFactory.Create())
             {
-                return db.Query<Event>(
-                    sql,
-                    new { SearchTerm = search }).ToList();
+                List<Event> events = db.Query<Event>(sql).ToList();
+
+                foreach (Event eventItem in events)
+                {
+                    PopulateVenueDisplayDetails(eventItem);
+                }
+
+                if (search != null)
+                {
+                    events = events
+                        .Where(e =>
+                            (e.EventName != null &&
+                             e.EventName.IndexOf(
+                                 search,
+                                 StringComparison.OrdinalIgnoreCase) >= 0)
+                            ||
+                            (e.VenueName != null &&
+                             e.VenueName.IndexOf(
+                                 search,
+                                 StringComparison.OrdinalIgnoreCase) >= 0))
+                        .ToList();
+                }
+
+                return events;
             }
         }
 
         public Event GetById(int eventId)
         {
             const string sql = @"
-                SELECT
-                    e.*,
-                    v.VenueName,
-                    v.VenueImagePath
-                FROM dbo.Events e
-                INNER JOIN dbo.EventVenues v
-                    ON e.VenueId = v.VenueId
-                WHERE e.EventId = @eventId;";
+                SELECT *
+                FROM dbo.Events
+                WHERE EventId = @eventId;";
 
             using (IDbConnection db = connectionFactory.Create())
             {
-                return db.QuerySingleOrDefault<Event>(
+                Event eventItem = db.QuerySingleOrDefault<Event>(
                     sql,
                     new { eventId });
-            }
-        }
 
-        public IReadOnlyList<EventVenue> GetActiveVenues()
-        {
-            const string sql = @"
-                SELECT *
-                FROM dbo.EventVenues
-                WHERE IsActive = 1
-                ORDER BY VenueName ASC;";
+                PopulateVenueDisplayDetails(eventItem);
 
-            using (IDbConnection db = connectionFactory.Create())
-            {
-                return db.Query<EventVenue>(sql).ToList();
+                return eventItem;
             }
         }
 
@@ -103,7 +101,7 @@ namespace CrownTowersClub.Repositories
                     CustomEventType,
                     StartDateTime,
                     EndDateTime,
-                    VenueId,
+                    VenueDetails,
                     EventImagePath,
                     ManualStatus
                 )
@@ -115,7 +113,7 @@ namespace CrownTowersClub.Repositories
                     @CustomEventType,
                     @StartDateTime,
                     @EndDateTime,
-                    @VenueId,
+                    @VenueDetails,
                     @EventImagePath,
                     'Draft'
                 );
@@ -139,7 +137,7 @@ namespace CrownTowersClub.Repositories
                     CustomEventType = @CustomEventType,
                     StartDateTime = @StartDateTime,
                     EndDateTime = @EndDateTime,
-                    VenueId = @VenueId,
+                    VenueDetails = @VenueDetails,
                     EventImagePath = @EventImagePath,
                     UpdatedAt = SYSUTCDATETIME()
                 WHERE EventId = @EventId;";
@@ -186,6 +184,29 @@ namespace CrownTowersClub.Repositories
             {
                 return db.Execute(sql, new { eventId }) == 1;
             }
+        }
+
+        // ============================================================
+        // 3. Venue Snapshot Handling
+        // ============================================================
+
+        private static void PopulateVenueDisplayDetails(Event eventItem)
+        {
+            if (eventItem == null ||
+                string.IsNullOrWhiteSpace(eventItem.VenueDetails))
+            {
+                return;
+            }
+
+            VenueOption venue =
+                JsonConvert.DeserializeObject<VenueOption>(
+                    eventItem.VenueDetails);
+
+            if (venue == null)
+                return;
+
+            eventItem.VenueName = venue.VenueName;
+            eventItem.VenueImagePath = venue.VenueImagePath;
         }
     }
 }
