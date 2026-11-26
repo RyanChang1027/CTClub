@@ -115,7 +115,7 @@ namespace CrownTowersClub.Repositories
                     @EndDateTime,
                     @VenueDetails,
                     @EventImagePath,
-                    'Draft'
+                    @ManualStatus
                 );
 
                 SELECT CAST(SCOPE_IDENTITY() AS INT);";

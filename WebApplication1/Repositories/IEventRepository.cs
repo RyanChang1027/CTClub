@@ -23,8 +23,8 @@ namespace CrownTowersClub.Repositories
         // Write Actions
 
         /// <summary>
-        /// Creates a new event and returns its generated ID.
-        /// New events will start as Draft.
+        /// Inserts a new event using the ManualStatus provided by the event object.
+        /// Draft events use "Draft"; finalized events use NULL for automatic status calculation.
         /// </summary>
         int Insert(Event eventItem);
 

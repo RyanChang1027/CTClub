@@ -64,130 +64,134 @@
                     foreach (var eventItem in Model.Events)
                     {
                         string statusClass =
-                            eventItem.ManualStatus == "Draft"
+                            eventItem.DisplayStatus == "Draft"
                                 ? "status-pill--draft"
-                                : eventItem.ManualStatus == "Cancelled"
-                                    ? "status-pill--cancelled"
-                                    : "status-pill--neutral";
+                                : eventItem.DisplayStatus == "Upcoming"
+                                    ? "status-pill--upcoming"
+                                    : eventItem.DisplayStatus == "Ongoing"
+                                        ? "status-pill--ongoing"
+                                        : eventItem.DisplayStatus == "Completed"
+                                            ? "status-pill--completed"
+                                            : eventItem.DisplayStatus == "Cancelled"
+                                                ? "status-pill--cancelled"
+                                                : "status-pill--neutral";
             
-                        <tr>
-                            <!-- Venue -->
-                            <td>
-                                <div class="events-venue-cell">
-            
-                                    @if (!string.IsNullOrWhiteSpace(eventItem.VenueImagePath))
+                <tr>
+                    <!-- Venue -->
+                    <td>
+                        <div class="events-venue-cell">
+
+                            @if (!string.IsNullOrWhiteSpace(eventItem.VenueImagePath))
                                     {
-                                        <img src="@Url.Content(eventItem.VenueImagePath)"
-                                             alt="@eventItem.VenueName"
-                                             class="events-thumbnail" />
+                            <img src="@Url.Content(eventItem.VenueImagePath)"
+                                 alt="@eventItem.VenueName"
+                                 class="events-thumbnail" />
                                     }
                                     else
                                     {
-                                        <div class="events-thumbnail events-thumbnail--placeholder">
-                                            <span class="material-symbols-outlined">
-                                                location_on
-                                            </span>
-                                        </div>
+                            <div class="events-thumbnail events-thumbnail--placeholder">
+                                <span class="material-symbols-outlined">
+                                    location_on
+                                </span>
+                            </div>
                                     }
-            
-                                    <strong>
-                                        @(eventItem.VenueName ?? "Venue unavailable")
-                                    </strong>
-            
-                                </div>
-                            </td>
-            
-                            <!-- Event Name -->
-                            <td>
-                                <strong>@eventItem.EventName</strong>
-                            </td>
-            
-                            <!-- Location -->
-                            <td class="events-location-cell">
-                                <span class="events-location">
-                                    @(string.IsNullOrWhiteSpace(eventItem.VenueAddress)
+
+                            <strong>
+                                @(eventItem.VenueName ?? "Venue unavailable")
+                            </strong>
+
+                        </div>
+                    </td>
+
+                    <!-- Event Name -->
+                    <td>
+                        <strong>@eventItem.EventName</strong>
+                    </td>
+
+                    <!-- Location -->
+                    <td class="events-location-cell">
+                        <span class="events-location">
+                            @(string.IsNullOrWhiteSpace(eventItem.VenueAddress)
                                         ? "Address unavailable"
                                         : eventItem.VenueAddress)
-                                </span>
-                            </td>
-            
-                            <!-- Date & Time -->
-                            <td class="events-schedule-cell">
-                                <div class="events-schedule">
-            
-                                    @if (eventItem.StartDateTime.HasValue)
+                        </span>
+                    </td>
+
+                    <!-- Date & Time -->
+                    <td class="events-schedule-cell">
+                        <div class="events-schedule">
+
+                            @if (eventItem.StartDateTime.HasValue)
                                     {
-                                        <strong>
-                                            @eventItem.StartDateTime.Value.ToString("dd MMM yyyy")
-            
-                                            @if (eventItem.EndDateTime.HasValue &&
+                            <strong>
+                                @eventItem.StartDateTime.Value.ToString("dd MMM yyyy")
+
+                                @if (eventItem.EndDateTime.HasValue &&
                                                 eventItem.StartDateTime.Value.Date != eventItem.EndDateTime.Value.Date)
                                             {
-                                                <span>
-                                                    – @eventItem.EndDateTime.Value.ToString("dd MMM yyyy")
-                                                </span>
+                                <span>
+                                    – @eventItem.EndDateTime.Value.ToString("dd MMM yyyy")
+                                </span>
                                             }
-                                        </strong>
+                            </strong>
                                     }
                                     else if (eventItem.EndDateTime.HasValue)
                                     {
-                                        <strong>
-                                            Ends @eventItem.EndDateTime.Value.ToString("dd MMM yyyy")
-                                        </strong>
+                            <strong>
+                                Ends @eventItem.EndDateTime.Value.ToString("dd MMM yyyy")
+                            </strong>
                                     }
-            
-                                    @if (eventItem.StartDateTime.HasValue ||
+
+                            @if (eventItem.StartDateTime.HasValue ||
                                         eventItem.EndDateTime.HasValue)
                                     {
-                                        <span>
-                                            @if (eventItem.StartDateTime.HasValue)
+                            <span>
+                                @if (eventItem.StartDateTime.HasValue)
                                             {
-                                                @eventItem.StartDateTime.Value.ToString("h:mm tt")
+                                @eventItem.StartDateTime.Value.ToString("h:mm tt")
                                             }
-            
-                                            @if (eventItem.StartDateTime.HasValue &&
+
+                                @if (eventItem.StartDateTime.HasValue &&
                                                 eventItem.EndDateTime.HasValue)
                                             {
-                                                <text> – </text>
+                                <text> – </text>
                                             }
-            
-                                            @if (eventItem.EndDateTime.HasValue)
+
+                                @if (eventItem.EndDateTime.HasValue)
                                             {
-                                                @eventItem.EndDateTime.Value.ToString("h:mm tt")
+                                @eventItem.EndDateTime.Value.ToString("h:mm tt")
                                             }
-                                        </span>
+                            </span>
                                     }
-            
-                                    @if (!eventItem.StartDateTime.HasValue &&
+
+                            @if (!eventItem.StartDateTime.HasValue &&
                                         !eventItem.EndDateTime.HasValue)
                                     {
-                                        <span>Not scheduled</span>
+                            <span>Not scheduled</span>
                                     }
-            
-                                </div>
-                            </td>
-            
-                            <!-- Status -->
-                            <td class="events-status-cell">
-                                <span class="status-pill @statusClass">
-                                    @(string.IsNullOrWhiteSpace(eventItem.ManualStatus)
-                                        ? "Unknown"
-                                        : eventItem.ManualStatus)
-                                </span>
-                            </td>
-            
-                            <!-- Action -->
-                            <td class="events-action-heading">
-                                <button type="button"
-                                        class="btn btn--secondary"
-                                        disabled
-                                        title="Event details will be available in the next step">
-                                    <span class="material-symbols-outlined">
-                                        visibility
-                                    </span>
-                                </button>
-                            </td>
-                        </tr>
+
+                        </div>
+                    </td>
+
+                    <!-- Status -->
+                    <td class="events-status-cell">
+                        <span class="status-pill @statusClass">
+                            @eventItem.DisplayStatus
+                        </span>
+                    </td>
+
+                    <!-- Action -->
+                    <td class="events-action-heading">
+                        <button type="button"
+                                class="btn btn--secondary"
+                                disabled
+                                title="Event details will be available in the next step">
+                            <span class="material-symbols-outlined">
+                                visibility
+                            </span>
+                        </button>
+                    </td>
+                </tr>
                     }
                 }
                 else
