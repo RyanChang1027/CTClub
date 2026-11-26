@@ -152,13 +152,14 @@
     <Compile Include="Mappers\MemberMapper.cs" />
     <Compile Include="Models\ApplicationStatus.cs" />
     <Compile Include="Models\Event.cs" />
-    <Compile Include="Models\EventVenue.cs" />
     <Compile Include="Models\MembershipTerm.cs" />
     <Compile Include="Models\Payment.cs" />
+    <Compile Include="Models\VenueOption.cs" />
     <Compile Include="Repositories\EventRepository.cs" />
     <Compile Include="Repositories\ICorporateEmployeeRepository.cs" />
     <Compile Include="Repositories\IEventRepository.cs" />
     <Compile Include="Repositories\IMemberRepository.cs" />
+    <Compile Include="Services\VenueConfigurationProvider.cs" />
     <Compile Include="ViewModels\ApiResponse.cs" />
     <Compile Include="ViewModels\CorporateEmployee.cs" />
     <Compile Include="Models\Member.cs" />
@@ -212,6 +213,7 @@
     <Content Include="Content\app\data\hods.json" />
     <Content Include="Content\app\data\genders.json" />
     <Content Include="Content\app\data\marital-statuses.json" />
+    <Content Include="Content\app\data\venues.json" />
     <None Include="Properties\PublishProfiles\Club.pubxml" />
     <None Include="Scripts\vendor\jquery\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\vendor\html5-qrcode\html5-qrcode.min.js" />

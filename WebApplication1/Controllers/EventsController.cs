@@ -1,19 +1,28 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Web.Mvc;
+using System.Data.SqlClient;
 using CrownTowersClub.Infrastructure.Session;
+using CrownTowersClub.Models;
 using CrownTowersClub.Repositories;
 using CrownTowersClub.ViewModels;
 using System.Collections.Generic;
+using CrownTowersClub.Services;
+using Newtonsoft.Json;
 
 namespace CrownTowersClub.Controllers
 {
     public sealed class EventsController : Controller
     {
         private readonly IEventRepository eventRepository;
+        private readonly VenueConfigurationProvider venueProvider;
 
-        public EventsController(IEventRepository eventRepository)
+        public EventsController(
+            IEventRepository eventRepository,
+            VenueConfigurationProvider venueProvider)
         {
             this.eventRepository = eventRepository;
+            this.venueProvider = venueProvider;
         }
 
         [HttpGet]
@@ -50,22 +59,196 @@ namespace CrownTowersClub.Controllers
             return View(viewModel);
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Create(EventCreateViewModel viewModel)
+        {
+            var user = Session[DevSessionKeys.User] as DevSessionUser;
+
+            if (user == null || user.Role != DevRoles.Committee)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (viewModel == null)
+            {
+                return RedirectToAction("Create");
+            }
+
+            // Validate the selected event type.
+            string[] allowedEventTypes =
+            {
+                "Annual Dinner",
+                "Club Gathering",
+                "Special Event",
+                "Other"
+            };
+
+            if (!allowedEventTypes.Contains(viewModel.EventType))
+            {
+                ModelState.AddModelError(
+                    "EventType",
+                    "Please select a valid event type.");
+            }
+
+            // A custom event type is required when Other is selected.
+            if (viewModel.EventType == "Other")
+            {
+                if (string.IsNullOrWhiteSpace(viewModel.CustomEventType))
+                {
+                    ModelState.AddModelError(
+                        "CustomEventType",
+                        "Please enter a custom event type.");
+                }
+                else
+                {
+                    viewModel.CustomEventType =
+                        viewModel.CustomEventType.Trim();
+                }
+            }
+            else
+            {
+                viewModel.CustomEventType = null;
+            }
+
+            // Find and validate the selected active venue.
+            VenueOption selectedVenue = null;
+
+            if (string.IsNullOrWhiteSpace(viewModel.VenueKey))
+            {
+                ModelState.AddModelError(
+                    "VenueKey",
+                    "Please select a venue.");
+            }
+            else
+            {
+                selectedVenue = venueProvider.GetActiveVenues()
+                    .FirstOrDefault(venue =>
+                        string.Equals(
+                            venue.VenueKey,
+                            viewModel.VenueKey,
+                            StringComparison.OrdinalIgnoreCase));
+
+                if (selectedVenue == null)
+                {
+                    ModelState.AddModelError(
+                        "VenueKey",
+                        "Please select a valid active venue.");
+                }
+            }
+
+            // Combine the date and time fields.
+            DateTime startDateTime = DateTime.MinValue;
+            DateTime endDateTime = DateTime.MinValue;
+
+            if (viewModel.StartDate.HasValue &&
+                viewModel.StartTime.HasValue)
+            {
+                startDateTime = viewModel.StartDate.Value.Date
+                    .Add(viewModel.StartTime.Value);
+            }
+
+            if (viewModel.EndDate.HasValue &&
+                viewModel.EndTime.HasValue)
+            {
+                endDateTime = viewModel.EndDate.Value.Date
+                    .Add(viewModel.EndTime.Value);
+            }
+
+            if (startDateTime != DateTime.MinValue &&
+                endDateTime != DateTime.MinValue &&
+                endDateTime <= startDateTime)
+            {
+                ModelState.AddModelError(
+                    "EndDate",
+                    "The event end date and time must be later than the start date and time.");
+            }
+
+            // Return the form if any validation fails.
+            if (!ModelState.IsValid)
+            {
+                var invalidViewModel = BuildCreateViewModel();
+
+                invalidViewModel.EventName = viewModel.EventName;
+                invalidViewModel.Description = viewModel.Description;
+                invalidViewModel.EventType = viewModel.EventType;
+                invalidViewModel.CustomEventType = viewModel.CustomEventType;
+                invalidViewModel.StartDate = viewModel.StartDate;
+                invalidViewModel.StartTime = viewModel.StartTime;
+                invalidViewModel.EndDate = viewModel.EndDate;
+                invalidViewModel.EndTime = viewModel.EndTime;
+                invalidViewModel.VenueKey = viewModel.VenueKey;
+
+                return View(invalidViewModel);
+            }
+
+            // Map the form data to the Event model.
+            var eventItem = new Event
+            {
+                EventName = viewModel.EventName.Trim(),
+                Description = viewModel.Description,
+                EventType = viewModel.EventType,
+                CustomEventType = viewModel.CustomEventType,
+                StartDateTime = startDateTime,
+                EndDateTime = endDateTime,
+                VenueDetails = JsonConvert.SerializeObject(selectedVenue),
+                EventImagePath = null
+            };
+
+            try
+            {
+                // Insert() automatically saves the event as Draft.
+                int eventId = eventRepository.Insert(eventItem);
+
+                TempData["SuccessMessage"] =
+                    "Event created successfully!";
+
+                return RedirectToAction("Index");
+            }
+            catch (SqlException)
+            {
+                ModelState.AddModelError(
+                    "",
+                    "A database error occurred while creating the event. Please try again.");
+            }
+            catch (Exception)
+            {
+                ModelState.AddModelError(
+                    "",
+                    "An unexpected error occurred. Please try again.");
+            }
+
+            var errorViewModel = BuildCreateViewModel();
+
+            errorViewModel.EventName = viewModel.EventName;
+            errorViewModel.Description = viewModel.Description;
+            errorViewModel.EventType = viewModel.EventType;
+            errorViewModel.CustomEventType = viewModel.CustomEventType;
+            errorViewModel.StartDate = viewModel.StartDate;
+            errorViewModel.StartTime = viewModel.StartTime;
+            errorViewModel.EndDate = viewModel.EndDate;
+            errorViewModel.EndTime = viewModel.EndTime;
+            errorViewModel.VenueKey = viewModel.VenueKey;
+
+            return View(errorViewModel);
+        }
+
         private EventCreateViewModel BuildCreateViewModel()
         {
             return new EventCreateViewModel
             {
                 EventTypes = new List<SelectListItem>
-            {
-                new SelectListItem { Value = "Annual Dinner", Text = "Annual Dinner" },
-                new SelectListItem { Value = "Club Gathering", Text = "Club Gathering" },
-                new SelectListItem { Value = "Special Event", Text = "Special Event" },
-                new SelectListItem { Value = "Other", Text = "Other" }
-            },
+                {
+                    new SelectListItem { Value = "Annual Dinner", Text = "Annual Dinner" },
+                    new SelectListItem { Value = "Club Gathering", Text = "Club Gathering" },
+                    new SelectListItem { Value = "Special Event", Text = "Special Event" },
+                    new SelectListItem { Value = "Other", Text = "Other" }
+                },
 
-                Venues = eventRepository.GetActiveVenues()
+                Venues = venueProvider.GetActiveVenues()
                     .Select(venue => new SelectListItem
                     {
-                        Value = venue.VenueId.ToString(),
+                        Value = venue.VenueKey,
                         Text = venue.VenueName
                     })
                     .ToList()

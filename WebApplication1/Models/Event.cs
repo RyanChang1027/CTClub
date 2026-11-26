@@ -30,8 +30,7 @@ namespace CrownTowersClub.Models
         [Required]
         public DateTime EndDateTime { get; set; }
 
-        [Required(ErrorMessage = "Please select a venue.")]
-        public int VenueId { get; set; }
+        public string VenueDetails { get; set; }
 
         public string VenueName { get; set; }
 
