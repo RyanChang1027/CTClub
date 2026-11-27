@@ -59,6 +59,19 @@ namespace CrownTowersClub.Controllers
             return View(viewModel);
         }
 
+        [HttpGet]
+        public ActionResult TableLayout()
+        {
+            var user = Session[DevSessionKeys.User] as DevSessionUser;
+
+            if (user == null || user.Role != DevRoles.Committee)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            return View();
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create(EventCreateViewModel viewModel, string submitAction)

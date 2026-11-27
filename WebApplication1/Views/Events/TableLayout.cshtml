@@ -1,0 +1,137 @@
+﻿@{ ViewBag.Title = "Table Layout";
+    Layout = "~/Views/Shared/_Layout.cshtml"; }
+
+<section class="table-layout-page">
+
+    <!-- Page Header -->
+    <header class="table-layout-header">
+
+        <div>
+            <h1 class="headline-md">Floor Plan</h1>
+            <p>2D Seating Arrangement</p>
+        </div>
+
+        <div class="table-layout-header-actions">
+
+            <a href="@Url.Action("Create", "Events")"
+               class="btn btn--secondary">
+                Back
+            </a>
+
+            <button type="button"
+                    class="btn btn--primary">
+                Save Layout
+            </button>
+
+        </div>
+
+    </header>
+
+    <!-- Editor Workspace -->
+    <div class="table-layout-workspace">
+
+        <!-- Main Canvas -->
+        <section class="table-layout-canvas-section">
+
+            <div class="table-layout-canvas">
+
+                <!-- Stage -->
+                <div class="table-layout-stage">
+                    STAGE
+                </div>
+
+                <!-- Canvas Content -->
+                <div class="table-layout-canvas-content"
+                     id="table-layout-canvas">
+
+                    <div class="table-layout-empty-state"
+                         id="table-layout-empty-state">
+
+                        <span class="material-symbols-outlined">
+                            table_restaurant
+                        </span>
+
+                        <strong>Your seating layout starts here</strong>
+
+                        <p>
+                            Drag tables from the Elements panel
+                            and arrange them here.
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <!-- Entrance -->
+                <div class="table-layout-entrance">
+                    ENTRANCE
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- Elements Sidebar -->
+        <aside class="table-layout-elements">
+
+            <h2>Elements</h2>
+
+            <!-- Tables -->
+            <div class="table-layout-element-group">
+
+                <h3>TABLES</h3>
+
+                <div class="table-layout-element-list">
+
+                    <button type="button"
+                            class="table-layout-element"
+                            data-table-shape="round"
+                            draggable="true">
+
+                        <span class="table-layout-element-icon table-layout-element-icon--round"></span>
+
+                        <strong>Round</strong>
+                        <small>Circular</small>
+
+                    </button>
+
+                </div>
+
+            </div>
+
+            <!-- Table Capacity -->
+            <div class="table-layout-capacity">
+
+                <h3>TABLE CAPACITY</h3>
+
+                <div class="table-layout-capacity-placeholder">
+                    Choose after adding a table
+                </div>
+
+            </div>
+
+            <!-- Delete Area -->
+            <div class="table-layout-delete-area"
+                 id="table-layout-delete-area">
+
+                <span class="material-symbols-outlined">
+                    delete
+                </span>
+
+                <strong>Delete Table</strong>
+
+                <small>
+                    Drag a table here to remove it
+                </small>
+
+            </div>
+
+        </aside>
+
+    </div>
+
+</section>
+
+@section scripts {
+    <script src="@Url.Content("~/Scripts/app/events-table-layout.js")"></script>
+}
