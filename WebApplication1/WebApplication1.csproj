@@ -198,6 +198,7 @@
     <Content Include="Scripts\app\app-shell.js" />
     <Content Include="Scripts\app\app.base.js" />
     <Content Include="Scripts\app\app.notifications.js" />
+    <Content Include="Scripts\app\events-table-layout.js" />
     <Content Include="Scripts\app\membership-scanner.js" />
     <Content Include="Scripts\app\payments.js" />
     <Content Include="Scripts\app\review.js" />
@@ -265,6 +266,7 @@
     <Content Include="Views\Member\Scan.cshtml" />
     <Content Include="Views\Events\Index.cshtml" />
     <Content Include="Views\Events\Create.cshtml" />
+    <Content Include="Views\Events\TableLayout.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

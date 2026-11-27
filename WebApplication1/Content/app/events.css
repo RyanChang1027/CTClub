@@ -286,6 +286,338 @@
 }
 
 /* ============================================================
+   2D Table Layout Editor
+   ============================================================ */
+
+/* Page Header */
+.table-layout-page {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    min-width: 0;
+}
+
+.table-layout-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.table-layout-header h1 {
+    margin: 0;
+    color: var(--on-surface);
+}
+
+.table-layout-header p {
+    margin: 6px 0 0;
+    color: var(--on-surface-variant);
+    font-size: 14px;
+}
+
+.table-layout-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+/* Editor Workspace */
+.table-layout-workspace {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 260px;
+    align-items: stretch;
+    gap: 20px;
+    min-width: 0;
+}
+
+/* Main Canvas Section */
+.table-layout-canvas-section {
+    min-width: 0;
+    min-height: 680px;
+    padding: 14px;
+    overflow: hidden;
+    background: #171717;
+    border: 1px solid #35302a;
+    border-radius: 14px;
+}
+
+/* Canvas */
+.table-layout-canvas {
+    display: flex;
+    flex-direction: column;
+    min-height: 650px;
+    height: 100%;
+    overflow: hidden;
+    background-color: #202020;
+    background-image:
+        linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+    background-size: 24px 24px;
+    border: 1px solid #403a30;
+    border-radius: 10px;
+}
+
+/* Stage */
+.table-layout-stage {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 58px;
+    margin: 18px 22px 0;
+    color: #D6B66A;
+    background: #30291d;
+    border: 1px solid #80652f;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 3px;
+}
+
+/* Canvas Content */
+.table-layout-canvas-content {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    min-height: 440px;
+    padding: 30px;
+    position: relative;
+}
+
+.table-layout-empty-state {
+    max-width: 320px;
+    text-align: center;
+}
+
+.table-layout-empty-state > .material-symbols-outlined {
+    display: block;
+    margin-bottom: 16px;
+    color: #A88A4A;
+    font-size: 48px;
+}
+
+.table-layout-empty-state strong {
+    display: block;
+    margin-bottom: 8px;
+    color: #F1E8D5;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.table-layout-empty-state p {
+    margin: 0;
+    color: #A7A29A;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+/* Entrance */
+.table-layout-entrance {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 42px;
+    margin: 0 22px 18px;
+    color: #A7A29A;
+    border-top: 1px dashed #76664A;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+}
+
+/* Elements Panel */
+.table-layout-elements {
+    min-width: 0;
+    padding: 22px 18px;
+    background: #171717;
+    border: 1px solid #35302a;
+    border-radius: 14px;
+}
+
+.table-layout-elements > h2 {
+    margin: 0 0 26px;
+    color: #F1E8D5;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.table-layout-element-group h3,
+.table-layout-capacity h3 {
+    margin: 0 0 14px;
+    color: #BDA36B;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+}
+
+/* Table Element Options */
+.table-layout-element-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.table-layout-element {
+    display: grid;
+    grid-template-columns: 48px minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    align-items: center;
+    column-gap: 12px;
+    width: 100%;
+    min-height: 68px;
+    padding: 10px 12px;
+    color: #F1E8D5;
+    text-align: left;
+    background: #22201c;
+    border: 1px solid #49402f;
+    border-radius: 9px;
+    cursor: grab;
+}
+
+.table-layout-element:disabled {
+    opacity: 1;
+}
+
+.table-layout-element strong {
+    align-self: end;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.table-layout-element small {
+    align-self: start;
+    margin-top: 3px;
+    color: #A7A29A;
+    font-size: 11px;
+}
+
+/* Table Shape Previews */
+.table-layout-element-icon {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+    display: block;
+    width: 34px;
+    height: 34px;
+    justify-self: center;
+    background: #A88A4A;
+    border: 2px solid #D6B66A;
+}
+
+.table-layout-element-icon--round {
+    border-radius: 50%;
+}
+
+.table-layout-element-icon--rectangle {
+    width: 40px;
+    height: 28px;
+    border-radius: 5px;
+}
+
+.table-layout-element-icon--oval {
+    width: 42px;
+    height: 27px;
+    border-radius: 50%;
+}
+
+/* Table Capacity */
+.table-layout-capacity {
+    margin-top: 30px;
+    padding-top: 22px;
+    border-top: 1px solid #35302a;
+}
+
+.table-layout-capacity-placeholder {
+    padding: 16px 12px;
+    color: #918B80;
+    background: #22201c;
+    border: 1px dashed #554a37;
+    border-radius: 8px;
+    font-size: 12px;
+    line-height: 1.5;
+    text-align: center;
+}
+
+/* Placed tables */
+.table-layout-table {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #c5a15b;
+    background: #292929;
+    color: #f5f5f5;
+    font-weight: 600;
+    cursor: grab;
+    user-select: none;
+}
+
+.table-layout-table--round {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+}
+
+.table-layout-table--rectangle {
+    width: 130px;
+    height: 75px;
+    border-radius: 8px;
+}
+
+.table-layout-table--oval {
+    width: 130px;
+    height: 75px;
+    border-radius: 50%;
+}
+
+.table-layout-table:active {
+    cursor: grabbing;
+}
+
+/* ============================================================
+   Table Layout - Delete Area
+   ============================================================ */
+
+.table-layout-delete-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 28px;
+    padding: 24px 14px;
+    color: #D6A0A0;
+    background: #291D1D;
+    border: 1px dashed #8B4545;
+    border-radius: 10px;
+    text-align: center;
+    transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.table-layout-delete-area .material-symbols-outlined {
+    font-size: 28px;
+}
+
+.table-layout-delete-area strong {
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.table-layout-delete-area small {
+    color: #B99A9A;
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+/* Highlight when dragging a table over the delete area */
+.table-layout-delete-area.is-drag-over {
+    background: #482525;
+    border-color: #E06B6B;
+    border-style: solid;
+    color: #FFB3B3;
+}
+
+/* ============================================================
    Responsive Layout
    ============================================================ */
 
@@ -310,5 +642,89 @@
 
     .events-table {
         min-width: 900px;
+    }
+}
+
+/* ============================================================
+   Table Layout Editor - Responsive Layout
+   ============================================================ */
+
+@media (max-width: 1024px) {
+
+    .table-layout-workspace {
+        grid-template-columns: minmax(0, 1fr) 230px;
+        gap: 14px;
+    }
+
+    .table-layout-elements {
+        padding: 18px 14px;
+    }
+}
+
+@media (max-width: 767px) {
+
+    .table-layout-header {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .table-layout-header-actions {
+        width: 100%;
+    }
+
+    .table-layout-header-actions .btn {
+        flex: 1;
+        justify-content: center;
+    }
+
+    .table-layout-workspace {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .table-layout-canvas-section {
+        min-height: 560px;
+        padding: 10px;
+    }
+
+    .table-layout-canvas {
+        min-height: 540px;
+    }
+
+    .table-layout-canvas-content {
+        min-height: 360px;
+        padding: 20px;
+    }
+
+    .table-layout-elements {
+        padding: 20px;
+    }
+
+    .table-layout-element-list {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+    }
+
+    .table-layout-element {
+        grid-template-columns: 1fr;
+        grid-template-rows: 38px auto auto;
+        justify-items: center;
+        gap: 4px;
+        padding: 12px 6px;
+        text-align: center;
+    }
+
+    .table-layout-element-icon {
+        grid-column: 1;
+        grid-row: 1;
+    }
+
+    .table-layout-element strong {
+        align-self: center;
+    }
+
+    .table-layout-element small {
+        align-self: center;
+        margin-top: 0;
     }
 }
