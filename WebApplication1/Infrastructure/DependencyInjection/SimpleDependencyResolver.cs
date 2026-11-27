@@ -52,10 +52,13 @@ namespace CrownTowersClub.Infrastructure.DependencyInjection
 
             if (serviceType == typeof(EventsController))
             {
+                IDbConnectionFactory connectionFactory =
+                    new SqlConnectionFactory();
+
                 return new EventsController(
-                    new EventRepository(
-                        new SqlConnectionFactory()),
-                    new VenueConfigurationProvider());
+                    new EventRepository(connectionFactory),
+                    new VenueConfigurationProvider(),
+                    new MemberRepository(connectionFactory));
             }
 
             if (serviceType == typeof(IEventRepository))

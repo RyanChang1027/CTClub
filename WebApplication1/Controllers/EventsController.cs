@@ -16,13 +16,16 @@ namespace CrownTowersClub.Controllers
     {
         private readonly IEventRepository eventRepository;
         private readonly VenueConfigurationProvider venueProvider;
+        private readonly IMemberRepository memberRepository;
 
         public EventsController(
             IEventRepository eventRepository,
-            VenueConfigurationProvider venueProvider)
+            VenueConfigurationProvider venueProvider,
+            IMemberRepository memberRepository)
         {
             this.eventRepository = eventRepository;
             this.venueProvider = venueProvider;
+            this.memberRepository = memberRepository;
         }
 
         [HttpGet]
@@ -70,6 +73,35 @@ namespace CrownTowersClub.Controllers
             }
 
             return View();
+        }
+
+        [HttpGet]
+        public ActionResult GetSeatEligibleMembers()
+        {
+            var user = Session[DevSessionKeys.User] as DevSessionUser;
+
+            if (user == null || user.Role != DevRoles.Committee)
+            {
+                return new HttpStatusCodeResult(403);
+            }
+
+            var members = memberRepository
+                .GetActiveMembersForSeatAssignment();
+
+            var result = members.Select(member => new
+            {
+                id = member.MemberId,
+                name = member.Name,
+                membershipNumber = member.MembershipNumber
+            }).ToList();
+
+            return Json(
+                new
+                {
+                    success = true,
+                    members = result
+                },
+                JsonRequestBehavior.AllowGet);
         }
 
         [HttpPost]

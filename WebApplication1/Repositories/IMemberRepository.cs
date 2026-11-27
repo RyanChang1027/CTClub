@@ -20,6 +20,8 @@ namespace CrownTowersClub.Repositories
 
         Member GetByMembershipNumber(string membershipNumber);
 
+        IReadOnlyList<Member> GetActiveMembersForSeatAssignment();
+
         /// <summary>
         /// Gets all applications (history) for a specific NRIC, ordered by newest first.
         /// Used in "My Applications".
