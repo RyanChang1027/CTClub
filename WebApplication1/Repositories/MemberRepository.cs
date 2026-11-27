@@ -58,6 +58,19 @@ namespace CrownTowersClub.Repositories
                     new { membershipNumber });
         }
 
+        public IReadOnlyList<Member> GetActiveMembersForSeatAssignment()
+        {
+            string sql = BaseSelectSql + @"
+                WHERE ms.MembershipStatus = 'Active'
+                  AND mt.TermStatus = 'Active'
+                  AND CAST(GETDATE() AS DATE)
+                      BETWEEN mt.StartDate AND mt.EndDate
+                ORDER BY m.Name ASC;";
+
+            using (IDbConnection db = connectionFactory.Create())
+                return db.Query<Member>(sql).ToList();
+        }
+
         public IReadOnlyList<Member> GetByNric(string nric)
         {
             string sql = BaseSelectSql + @"

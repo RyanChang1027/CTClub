@@ -15,6 +15,7 @@ App.Events.tableLayout = (function (window, document) {
     var configPanel;
     var configNameInput;
     var configCapacitySelect;
+    var seatAssignmentGrid;
 
     var tableCount = 0;
     var draggedTableId = null;
@@ -32,6 +33,7 @@ App.Events.tableLayout = (function (window, document) {
         configPanel = document.getElementById("table-layout-config-panel");
         configNameInput = document.getElementById("table-config-name");
         configCapacitySelect = document.getElementById("table-config-capacity");
+        seatAssignmentGrid = document.getElementById("table-layout-seat-grid");
 
         if (!canvas || !emptyState) {
             return;
@@ -210,6 +212,20 @@ App.Events.tableLayout = (function (window, document) {
         }
     }
 
+    function renderSeatAssignmentGrid(capacity) {
+        seatAssignmentGrid.innerHTML = "";
+
+        for (var i = 1; i <= capacity; i++) {
+            var seat = document.createElement("div");
+
+            seat.className = "table-layout-assignment-seat";
+            seat.setAttribute("data-seat-number", i);
+            seat.textContent = "Available Seat";
+
+            seatAssignmentGrid.appendChild(seat);
+        }
+    }
+
     function isValidShape(shape) {
         return shape === "round" ||
             shape === "rectangle" ||
@@ -227,6 +243,10 @@ App.Events.tableLayout = (function (window, document) {
         // Load the selected table's current settings.
         configNameInput.value = table.querySelector("span").textContent;
         configCapacitySelect.value = table.getAttribute("data-capacity");
+
+        renderSeatAssignmentGrid(
+            parseInt(table.getAttribute("data-capacity"), 10)
+        );
 
         // Show the configuration panel.
         configPanel.hidden = false;
@@ -256,11 +276,12 @@ App.Events.tableLayout = (function (window, document) {
                 return;
             }
 
-            var capacity = parseInt(configCapacitySelect.value, 12);
+            var capacity = parseInt(configCapacitySelect.value, 10);
 
             selectedTable.setAttribute("data-capacity", capacity);
 
             renderTableSeats(selectedTable, capacity);
+            renderSeatAssignmentGrid(capacity);
         });
 
         // Close the panel when clicking outside the table and panel.
